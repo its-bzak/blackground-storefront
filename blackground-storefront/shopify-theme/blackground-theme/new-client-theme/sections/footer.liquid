@@ -1,8 +1,14 @@
+{% assign developer_link = 'Built by <a href="https://www.ryanbarczak.com" target="_blank">Ryan Barczak</a>' %}
+
 <footer>
   <div class="footer__copyright">
     &copy;
     {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
+    {{ shop.name | link_to: routes.root_url }}.
+    <br>
+    {{ powered_by_link }}. 
+    <br>
+    {{ developer_link }}
   </div>
 
   <div class="footer__links">
@@ -21,14 +27,28 @@
 </footer>
 
 {% stylesheet %}
+  #shopify-section-{{ section.id }} {
+    margin-top: 2rem;
+    background-color: hsl(0 0% 5%);
+  }
+
   footer {
     display: flex;
+    width: 100%;
+    background-color: hsl(0 0% 5%);
     justify-content: space-between;
-    margin-top: 2rem;
+    padding-block: 1.5rem;
+  }
+  footer .footer__copyright {
+    font-size: 0.875rem;
+    color: hsl(0, 0%, 90%);
   }
   footer a {
     text-decoration: none;
-    color: var(--color-foreground);
+    color: hsl(0, 0%, 90%);
+  }
+  footer a:hover {
+    color: hsl(0, 0%, 55%);
   }
   footer .footer__links,
   footer .footer__payment {
