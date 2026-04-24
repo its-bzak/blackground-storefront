@@ -1,0 +1,143 @@
+<section class="hero full-width" data-hero-reveal>
+  <div class="hero__inner hero__inner--animated">
+    <div class="hero__left"></div>
+    <div class="hero__right"></div>
+  </div>
+
+  <div class="hero__inner hero__inner--preview hero__inner--animated">
+    <div class="hero__preview-item"></div>
+    <div class="hero__preview-item"></div>
+    <div class="hero__preview-item"></div>
+  </div>
+
+  <div class="hero__inner hero__inner--animated">
+    <div class="hero__left"></div>
+    <div class="hero__right"></div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .hero {
+    background: hsl(0 0% 5%);
+    border-top: 0.5px solid hsl(0 0% 24%);
+    border-bottom: 0.5px solid hsl(0 0% 24%);
+  }
+
+  .hero__inner {
+    display: grid;
+    grid-template-columns: 2.5fr 1.5fr;
+    gap: 1rem;
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+    padding-block: 2rem;
+  }
+
+  .hero__inner--animated {
+    opacity: 0;
+    transform: translateY(2rem);
+    transition:
+      opacity 700ms ease,
+      transform 700ms ease;
+    will-change: opacity, transform;
+  }
+
+  .hero__inner--visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .hero__inner--reverse {
+    grid-template-columns: 1.5fr 2.5fr;
+  }
+
+  .hero__inner--preview {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .hero__left,
+  .hero__right,
+  .hero__preview-item {
+    min-height: 32rem;
+    border-radius: 1.5rem;
+  }
+
+  .hero__left {
+    background: hsl(201 100% 50%);
+  }
+
+  .hero__right {
+    background: hsl(332 100% 58%);
+  }
+
+  .hero__preview-item:nth-child(1) {
+    background: hsl(42 100% 54%);
+  }
+
+  .hero__preview-item:nth-child(2) {
+    background: hsl(159 100% 42%);
+  }
+
+  .hero__preview-item:nth-child(3) {
+    background: hsl(271 100% 62%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__inner--animated {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  @media screen and (max-width: 989px) {
+    .hero__inner {
+      grid-template-columns: 1fr;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const heroSections = document.querySelectorAll('[data-hero-reveal]');
+
+  heroSections.forEach((section) => {
+    const rows = section.querySelectorAll('.hero__inner--animated');
+
+    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+      rows.forEach((row) => row.classList.add('hero__inner--visible'));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('hero__inner--visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.2,
+        rootMargin: '0px 0px -10% 0px',
+      }
+    );
+
+    rows.forEach((row) => observer.observe(row));
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Home hero",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Home hero"
+    }
+  ]
+}
+{% endschema %}

@@ -211,25 +211,51 @@
 
   @media screen and (max-width: 749px) {
     .header__inner {
-      height: auto;
-      flex-wrap: wrap;
+      height: 5rem;
+      flex-wrap: nowrap;
+      gap: 0.75rem;
     }
 
     .header .header__menu {
-      width: 100%;
-      order: 3;
+      flex: 1 1 auto;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .header .header__menu,
+    .header .header__icons {
+      flex-wrap: nowrap;
+      gap: 0.75rem;
+    }
+
+    .header .header__menu a,
+    .header .header__menu summary {
+      white-space: nowrap;
+      font-size: 0.9rem;
+    }
+
+    .header .logo_icon {
+      width: 3.25rem;
+      height: 3.25rem;
+      flex: 0 0 auto;
     }
 
     .header .header__products {
-      width: 100%;
+      width: auto;
+      flex: 0 0 auto;
     }
 
     .header .header__products-dropdown {
-      position: static;
+      position: absolute;
+      top: calc(100% + 0.75rem);
+      left: 50%;
+      width: min(90vw, 32rem);
       min-width: 0;
-      margin-top: 0.75rem;
-      transform: none;
-      grid-template-columns: 1fr;
+      margin-top: 0;
+      transform: translateX(-50%);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      padding: 1.25rem;
     }
   }
 {% endstylesheet %}

@@ -74,7 +74,7 @@ p:empty {
 /** Theme styles below */
 body {
   font-family: var(--font-primary--family);
-  background-color: var(--color-background);
+  background-color: hsl(0 0% 5%);
   color: var(--color-foreground);
 }
 
