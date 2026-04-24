@@ -1,5 +1,10 @@
 <section class="hero full-width" data-hero-reveal>
-  <div class="hero__inner hero__inner--top hero__inner--animated">
+  <div
+    class="hero__inner hero__inner--top hero__inner--animated"
+    {% if section.settings.top_background != blank %}
+      style="background-image: linear-gradient(hsl(0 0% 5% / 0.2), hsl(0 0% 5% / 0.2)), url('{{ section.settings.top_background | image_url: width: 2200 }}');"
+    {% endif %}
+  >
     <div class="hero__left hero__left--split">
       <div class="hero__left-panel"></div>
       <div class="hero__left-panel"></div>
@@ -11,13 +16,23 @@
     </div>
   </div>
 
-  <div class="hero__inner hero__inner--preview hero__inner--animated">
+  <div
+    class="hero__inner hero__inner--preview hero__inner--animated"
+    {% if section.settings.middle_background != blank %}
+      style="background-image: linear-gradient(hsl(0 0% 5% / 0.2), hsl(0 0% 5% / 0.2)), url('{{ section.settings.middle_background | image_url: width: 2200 }}');"
+    {% endif %}
+  >
     <div class="hero__preview-item"></div>
     <div class="hero__preview-item"></div>
     <div class="hero__preview-item"></div>
   </div>
 
-  <div class="hero__inner hero__inner--bottom hero__inner--animated">
+  <div
+    class="hero__inner hero__inner--bottom hero__inner--animated"
+    {% if section.settings.bottom_background != blank %}
+      style="background-image: linear-gradient(hsl(0 0% 5% / 0.2), hsl(0 0% 5% / 0.2)), url('{{ section.settings.bottom_background | image_url: width: 2200 }}');"
+    {% endif %}
+  >
     <div class="hero__left"></div>
 
     <div class="hero__right">
@@ -50,6 +65,9 @@
     padding-block: 2rem;
     scroll-snap-align: start;
     scroll-snap-stop: always;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
   }
 
   .hero__inner:first-child {
@@ -88,11 +106,13 @@
   .hero__preview-item {
     min-height: 32rem;
     border-radius: 1.5rem;
+    border: 1px solid hsl(0 0% 100% / 0.08);
+    backdrop-filter: blur(10px);
   }
 
   .hero__left {
     padding: 1.5rem;
-    background: hsl(201 100% 50%);
+    background: hsl(0 0% 18% / 0.42);
   }
 
   .hero__left--split {
@@ -104,7 +124,8 @@
   .hero__left-panel {
     height: 100%;
     border-radius: 1.25rem;
-    background: hsl(187 100% 66%);
+    border: 1px solid hsl(0 0% 100% / 0.08);
+    background: hsl(0 0% 92% / 0.14);
   }
 
   .hero__right {
@@ -112,31 +133,32 @@
     grid-template-rows: 1fr 1fr;
     gap: 1rem;
     padding: 1.5rem;
-    background: hsl(332 100% 58%);
+    background: hsl(0 0% 14% / 0.5);
   }
 
   .hero__right-panel {
     border-radius: 1.25rem;
+    border: 1px solid hsl(0 0% 100% / 0.08);
   }
 
   .hero__right-panel--top {
-    background: hsl(12 100% 64%);
+    background: hsl(0 0% 90% / 0.18);
   }
 
   .hero__right-panel--bottom {
-    background: hsl(48 100% 58%);
+    background: hsl(0 0% 72% / 0.1);
   }
 
   .hero__preview-item:nth-child(1) {
-    background: hsl(42 100% 54%);
+    background: hsl(0 0% 92% / 0.14);
   }
 
   .hero__preview-item:nth-child(2) {
-    background: hsl(159 100% 42%);
+    background: hsl(0 0% 82% / 0.2);
   }
 
   .hero__preview-item:nth-child(3) {
-    background: hsl(271 100% 62%);
+    background: hsl(0 0% 72% / 0.12);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -231,7 +253,23 @@
 {% schema %}
 {
   "name": "Home hero",
-  "settings": [],
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "top_background",
+      "label": "Top section background"
+    },
+    {
+      "type": "image_picker",
+      "id": "middle_background",
+      "label": "Middle section background"
+    },
+    {
+      "type": "image_picker",
+      "id": "bottom_background",
+      "label": "Bottom section background"
+    }
+  ],
   "presets": [
     {
       "name": "Home hero"
