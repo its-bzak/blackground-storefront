@@ -18,6 +18,8 @@
 
 {% stylesheet %}
   .hero {
+    --hero-header-offset: 7rem;
+    --hero-footer-offset: 6rem;
     background: hsl(0 0% 5%);
     border-top: 0.5px solid hsl(0 0% 24%);
     border-bottom: 0.5px solid hsl(0 0% 24%);
@@ -26,13 +28,26 @@
   .hero__inner {
     display: grid;
     grid-template-columns: 2.5fr 1.5fr;
+    align-items: stretch;
     gap: 1rem;
     width: min(
       calc(var(--page-width) - var(--page-margin) * 2),
       calc(100% - var(--page-margin) * 2)
     );
+    min-height: 100svh;
     margin-inline: auto;
     padding-block: 2rem;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .hero__inner:first-child {
+    min-height: calc(100svh - var(--hero-header-offset));
+    scroll-margin-top: var(--hero-header-offset);
+  }
+
+  .hero__inner:last-child {
+    min-height: calc(100svh - var(--hero-footer-offset));
   }
 
   .hero__inner--animated {
