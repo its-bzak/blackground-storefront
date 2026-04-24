@@ -1,7 +1,14 @@
 <section class="hero full-width" data-hero-reveal>
-  <div class="hero__inner hero__inner--animated">
-    <div class="hero__left"></div>
-    <div class="hero__right"></div>
+  <div class="hero__inner hero__inner--top hero__inner--animated">
+    <div class="hero__left hero__left--split">
+      <div class="hero__left-panel"></div>
+      <div class="hero__left-panel"></div>
+    </div>
+
+    <div class="hero__right">
+      <div class="hero__right-panel hero__right-panel--top"></div>
+      <div class="hero__right-panel hero__right-panel--bottom"></div>
+    </div>
   </div>
 
   <div class="hero__inner hero__inner--preview hero__inner--animated">
@@ -10,9 +17,13 @@
     <div class="hero__preview-item"></div>
   </div>
 
-  <div class="hero__inner hero__inner--animated">
+  <div class="hero__inner hero__inner--bottom hero__inner--animated">
     <div class="hero__left"></div>
-    <div class="hero__right"></div>
+
+    <div class="hero__right">
+      <div class="hero__right-panel hero__right-panel--top"></div>
+      <div class="hero__right-panel hero__right-panel--bottom"></div>
+    </div>
   </div>
 </section>
 
@@ -80,11 +91,40 @@
   }
 
   .hero__left {
+    padding: 1.5rem;
     background: hsl(201 100% 50%);
   }
 
+  .hero__left--split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .hero__left-panel {
+    height: 100%;
+    border-radius: 1.25rem;
+    background: hsl(187 100% 66%);
+  }
+
   .hero__right {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 1rem;
+    padding: 1.5rem;
     background: hsl(332 100% 58%);
+  }
+
+  .hero__right-panel {
+    border-radius: 1.25rem;
+  }
+
+  .hero__right-panel--top {
+    background: hsl(12 100% 64%);
+  }
+
+  .hero__right-panel--bottom {
+    background: hsl(48 100% 58%);
   }
 
   .hero__preview-item:nth-child(1) {
@@ -110,6 +150,49 @@
   @media screen and (max-width: 989px) {
     .hero__inner {
       grid-template-columns: 1fr;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .hero__inner:not(.hero__inner--preview) {
+      grid-template-rows: 3fr 1fr;
+    }
+
+    .hero__left,
+    .hero__right,
+    .hero__preview-item {
+      min-height: 0;
+    }
+
+    .hero__left,
+    .hero__right {
+      padding: 1rem;
+    }
+
+    .hero__left--split {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .hero__inner--preview {
+      display: grid;
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: calc(100% - 2.5rem);
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      overscroll-behavior-x: contain;
+      align-items: stretch;
+    }
+
+    .hero__inner--preview::-webkit-scrollbar {
+      display: none;
+    }
+
+    .hero__preview-item {
+      scroll-snap-align: center;
+      scroll-snap-stop: always;
+      min-height: 100%;
     }
   }
 {% endstylesheet %}
