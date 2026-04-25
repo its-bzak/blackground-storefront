@@ -5,15 +5,35 @@
       style="background-image: linear-gradient(hsl(0 0% 5% / 0.2), hsl(0 0% 5% / 0.2)), url('{{ section.settings.top_background | image_url: width: 2200 }}');"
     {% endif %}
   >
-    <div class="hero__content hero__content--split">
-      <div class="hero__left hero__left--split">
-        <div class="hero__left-panel"></div>
-        <div class="hero__left-panel"></div>
+    <div class="hero__content hero__content--top">
+      <div class="hero__model-stage">
+        <img
+          class="hero__model-image hero__model-image--featured hero__model-image--male"
+          src="{{ 'model-images/man_with_dark_blackground_t_shirt.png' | asset_url }}"
+          alt="Model wearing a dark Blackground t-shirt"
+          loading="eager"
+          width="1344"
+          height="768"
+        >
+        <img
+          class="hero__model-image hero__model-image--featured hero__model-image--female"
+          src="{{ 'model-images/woman_with_light_blackground_t_shirt.png' | asset_url }}"
+          alt="Model wearing a light Blackground t-shirt"
+          loading="eager"
+          width="1344"
+          height="768"
+        >
       </div>
 
-      <div class="hero__right">
-        <div class="hero__right-panel hero__right-panel--top"></div>
-        <div class="hero__right-panel hero__right-panel--bottom"></div>
+      <div class="hero__right hero__right--cta">
+        <p class="hero__cta-text">
+          Your outfit is your voice before you even speak. 
+          <br>
+          Make sure it says something real. 
+          <br>
+          Make sure it says you.
+        </p>
+          <a class="hero__cta-button" href="{{ routes.all_products_collection_url }}">Explore products</a>
       </div>
     </div>
   </div>
@@ -86,6 +106,20 @@
     grid-template-columns: 2.5fr 1.5fr;
   }
 
+  .hero__content--top {
+    grid-template-columns: minmax(0, 1.75fr) minmax(24rem, 1.15fr);
+    align-items: end;
+    align-self: end;
+    column-gap: 0.5rem;
+    min-height: calc(100svh - var(--hero-header-offset) - 2rem);
+  }
+
+  .hero__inner--top {
+    align-items: end;
+    padding-block: 2rem 0;
+    overflow: hidden;
+  }
+
   .hero__inner:first-child {
     min-height: calc(100svh - var(--hero-header-offset));
     scroll-margin-top: var(--hero-header-offset);
@@ -131,6 +165,15 @@
     background: hsl(0 0% 18% / 0.42);
   }
 
+  .hero__model-stage {
+    position: relative;
+    min-height: 100%;
+    display: grid;
+    align-items: end;
+    justify-items: center;
+    overflow: hidden;
+  }
+
   .hero__left--split {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -138,10 +181,48 @@
   }
 
   .hero__left-panel {
+    overflow: hidden;
+    position: relative;
     height: 100%;
     border-radius: 1.25rem;
     border: 1px solid hsl(0 0% 100% / 0.08);
     background: hsl(0 0% 92% / 0.14);
+  }
+
+  .hero__panel-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  .hero__model-image {
+    display: block;
+    width: min(100%, 44rem);
+    height: auto;
+  }
+
+  .hero__model-image--featured {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 0;
+    width: min(84%, 36rem);
+    max-width: none;
+    max-height: calc(100svh - var(--hero-header-offset) - 2rem);
+    transform: translateX(-50%) scaleX(0.72) scaleY(0.84);
+    transform-origin: center bottom;
+    filter: drop-shadow(0 2rem 3.5rem hsl(0 0% 0% / 0.45));
+  }
+
+  .hero__model-image--male {
+    z-index: 1;
+    transform: translateX(-64%) scaleX(0.72) scaleY(0.84);
+  }
+
+  .hero__model-image--female {
+    z-index: 2;
+    transform: translateX(-36%) scaleX(0.72) scaleY(0.84);
   }
 
   .hero__right {
@@ -151,6 +232,57 @@
     padding: 1.5rem;
     background: hsl(0 0% 14% / 0.5);
   }
+
+  .hero__content--top .hero__right {
+    align-self: center;
+  }
+
+  .hero__right--cta {
+    grid-template-rows: none;
+    align-content: center;
+    background: transparent;
+    backdrop-filter: none;
+    border: 0;
+      gap: 1.5rem;
+  }
+
+  .hero__cta-text {
+    margin: 0;
+    color: #f3c90b;
+    font-size: clamp(1.8rem, 1.15rem + 1.5vw, 2.9rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    font-weight: 900;
+    text-wrap: balance;
+  }
+
+    .hero__cta-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      min-height: 3.25rem;
+      padding: 0.9rem 1.4rem;
+      border: 1px solid #f3c90b;
+      border-radius: 999px;
+      color: #f3c90b;
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition:
+        background-color 180ms ease,
+        color 180ms ease,
+        border-color 180ms ease;
+    }
+
+    .hero__cta-button:hover,
+    .hero__cta-button:focus-visible {
+      background: #f3c90b;
+      color: hsl(0 0% 5%);
+      border-color: #f3c90b;
+    }
 
   .hero__right-panel {
     border-radius: 1.25rem;
@@ -189,6 +321,28 @@
     .hero__content--split {
       grid-template-columns: 1fr;
     }
+
+    .hero__content--top {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+
+    .hero__model-stage {
+      min-height: clamp(28rem, 60svh, 40rem);
+    }
+
+    .hero__model-image--featured {
+      width: min(100%, 32rem);
+      transform: translateX(-50%) scale(1.04);
+    }
+
+    .hero__model-image--male {
+      transform: translateX(-62%) scale(1.04);
+    }
+
+    .hero__model-image--female {
+      transform: translateX(-38%) scale(1.04);
+    }
   }
 
   @media screen and (max-width: 749px) {
@@ -205,6 +359,27 @@
     .hero__left,
     .hero__right {
       padding: 1rem;
+    }
+
+    .hero__content--top {
+      gap: 1.25rem;
+    }
+
+    .hero__model-stage {
+      min-height: 24rem;
+    }
+
+    .hero__model-image--featured {
+      width: min(100%, 26rem);
+      transform: translateX(-50%);
+    }
+
+    .hero__model-image--male {
+      transform: translateX(-58%);
+    }
+
+    .hero__model-image--female {
+      transform: translateX(-42%);
     }
 
     .hero__left--split {
