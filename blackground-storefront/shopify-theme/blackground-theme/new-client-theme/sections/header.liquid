@@ -1,304 +1,125 @@
-<header class="header full-width">
-  <div class="header__inner">
-    <div class="logo_icon">
-      <img
-        src="{{ 'blackground-logo.png' | asset_url }}"
-        alt="{{ shop.name }}"
-        class="logo_icon__image"
-      >
-    </div>
+<header class="bg-header full-width" role="banner">
+  <div class="bg-header__inner">
+    <a
+      class="bg-header__link bg-header__link--left bg-link"
+      href="{{ section.settings.left_link | default: routes.root_url }}"
+    >
+      {{ section.settings.left_label | default: 'MENU' }}
+    </a>
 
-    <div class="header__menu">
-      {{ 'Home' | link_to: routes.root_url }}
-      {{ 'About' | link_to: '/pages/about' }}
+    <a
+      class="bg-header__wordmark bg-serif"
+      href="{{ section.settings.wordmark_link | default: routes.root_url }}"
+      aria-label="{{ shop.name }}"
+    >
+      {{ section.settings.wordmark | default: 'BLACKGROUND' }}
+    </a>
 
-      <details class="header__products" data-header-products>
-        <summary>Products</summary>
-
-        <div class="header__products-dropdown">
-          <div class="header__products-column">
-            <h3>Men</h3>
-
-            <ul class="header__products-links" role="list">
-              <li>T-Shirts</li>
-              <li>Polos</li>
-              <li>Sweatshirts</li>
-              <li>Hoodies</li>
-            </ul>
-          </div>
-
-          <div class="header__products-column">
-            <h3>Women</h3>
-
-            <ul class="header__products-links" role="list">
-              <li>T-Shirts</li>
-              <li>Polos</li>
-              <li>Sweatshirts</li>
-              <li>Hoodies</li>
-            </ul>
-          </div>
-
-          <div class="header__products-column">
-            <h3>Collections</h3>
-
-            <ul class="header__products-links" role="list">
-              <li>Samples</li>
-              <li>Clearance</li>
-              <li>Stories</li>
-              <li>New-In</li>
-            </ul>
-          </div>
-        </div>
-      </details>
-    </div>
-
-    <div class="header__icons">
-      {% if shop.customer_accounts_enabled %}
-        <shopify-account menu="{{ section.settings.customer_account_menu }}">
-          {{ 'icon-account.svg' | inline_asset_content }}
-        </shopify-account>
-      {% endif %}
-
-      <a href="{{ routes.cart_url }}">
-        {% if cart.item_count > 0 %}
-          <sup>{{ cart.item_count }}</sup>
-        {% endif %}
-
-        {{ 'icon-cart.svg' | inline_asset_content }}
-      </a>
-    </div>
+    <a
+      class="bg-header__link bg-header__link--right bg-link"
+      href="{{ section.settings.right_link | default: routes.account_register_url }}"
+    >
+      {{ section.settings.right_label | default: 'JOIN US' }}
+    </a>
   </div>
 </header>
 
 {% stylesheet %}
-  .header {
-    background-color: hsl(0 0% 5%);
-    padding-block: 1rem;
+  .bg-header {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-start: 0;
+    z-index: 100;
+    height: var(--header-height);
+    background-color: var(--header-bg);
+    color: var(--gold);
   }
 
-  .header__inner {
-    height: 5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    width: min(
-      calc(var(--page-width) - var(--page-margin) * 2),
-      calc(100% - var(--page-margin) * 2)
-    );
-    margin-inline: auto;
-  }
-
-  .header .logo_icon {
-    display: flex;
-    align-items: center;
-    width: 3.75rem;
-    height: 3.75rem;
-  }
-
-  .header .logo_icon__image {
-    width: 100%;
+  .bg-header__inner {
     height: 100%;
-    object-fit: contain;
-  }
-
-  .header .header__menu {
-    position: relative;
-  }
-
-  .header a,
-  .header shopify-account,
-  .header summary {
-    position: relative;
-    text-decoration: none;
-    color: hsl(0 0% 90%);
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: center;
+    column-gap: var(--space-md);
+    padding-inline: clamp(1rem, 3vw, 2.5rem);
   }
 
-  .header a:hover,
-  .header shopify-account:hover,
-  .header summary:hover,
-  .header summary:focus-visible {
-    color: #f3c90b;
-    text-decoration: underline;
-    text-decoration-thickness: 0.125rem;
-    text-underline-offset: 0.25rem;
-    text-decoration-color: #f3c90b;
+  .bg-header__link {
+    color: var(--gold);
   }
 
-  .header .header__products {
-    position: relative;
+  .bg-header__link--left {
+    justify-self: start;
   }
 
-  .header .header__products summary {
-    list-style: none;
-    cursor: pointer;
+  .bg-header__link--right {
+    justify-self: end;
   }
 
-  .header .header__products summary::-webkit-details-marker {
-    display: none;
+  .bg-header__wordmark {
+    justify-self: center;
+    color: var(--gold);
+    font-size: clamp(1.25rem, 1rem + 1vw, 1.875rem);
+    line-height: 1;
+    letter-spacing: 0.04em;
   }
 
-  .header .header__products-dropdown {
-    position: absolute;
-    top: calc(100% + 1rem);
-    left: 50%;
-    z-index: 20;
-    display: none;
-    grid-template-columns: repeat(3, minmax(8rem, 1fr));
-    gap: 1.5rem;
-    min-width: 32rem;
-    padding: 1.5rem;
-    border: 1px solid hsl(0 0% 18%);
-    background-color: hsl(0 0% 8%);
-    box-shadow: 0 1rem 2rem hsl(0 0% 0% / 0.3);
-    transform: translateX(-50%);
-  }
-
-  .header .header__products:hover .header__products-dropdown,
-  .header .header__products:focus-within .header__products-dropdown,
-  .header .header__products[open] .header__products-dropdown {
-    display: grid;
-  }
-
-  .header .header__products-column {
-    display: grid;
-    gap: 0.5rem;
-  }
-
-  .header .header__products-links {
-    display: grid;
-    gap: 0.75rem;
-    padding: 0;
-    margin: 0;
-    list-style: none;
-  }
-
-  .header .header__products-links li {
-    color: hsl(0 0% 90%);
-  }
-
-  .header .header__products-column h3 {
-    color: hsl(0 0% 90%);
-    font-size: 0.875rem;
-    letter-spacing: 0.08em;
-    padding-bottom: 0.75rem;
-    margin-bottom: 0.25rem;
-    border-bottom: 1px solid hsl(0 0% 24%);
-    text-transform: uppercase;
-  }
-
-  .header a sup {
-    position: absolute;
-    left: 100%;
-    overflow: hidden;
-    max-width: var(--page-margin);
-  }
-
-  .header svg {
-    width: 2rem;
-  }
-
-  .header .header__menu,
-  .header .header__icons {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  @media screen and (max-width: 749px) {
-    .header__inner {
-      height: 5rem;
-      flex-wrap: nowrap;
-      gap: 0.75rem;
-    }
-
-    .header .header__menu {
-      flex: 1 1 auto;
-      justify-content: center;
-      min-width: 0;
-    }
-
-    .header .header__menu,
-    .header .header__icons {
-      flex-wrap: nowrap;
-      gap: 0.75rem;
-    }
-
-    .header .header__menu a,
-    .header .header__menu summary {
-      white-space: nowrap;
-      font-size: 0.9rem;
-    }
-
-    .header .logo_icon {
-      width: 3.25rem;
-      height: 3.25rem;
-      flex: 0 0 auto;
-    }
-
-    .header .header__products {
-      width: auto;
-      flex: 0 0 auto;
-    }
-
-    .header .header__products-dropdown {
-      position: absolute;
-      top: calc(100% + 0.75rem);
-      left: 50%;
-      width: min(90vw, 32rem);
-      min-width: 0;
-      margin-top: 0;
-      transform: translateX(-50%);
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1rem;
-      padding: 1.25rem;
+  @media screen and (max-width: 480px) {
+    .bg-header__link {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
     }
   }
 {% endstylesheet %}
-
-{% javascript %}
-  document.addEventListener('click', (event) => {
-    document.querySelectorAll('[data-header-products][open]').forEach((dropdown) => {
-      if (!dropdown.contains(event.target)) {
-        dropdown.removeAttribute('open');
-      }
-    });
-  });
-{% endjavascript %}
 
 {% schema %}
 {
   "name": "t:general.header",
   "settings": [
     {
-      "type": "link_list",
-      "id": "menu",
-      "label": "t:labels.menu"
+      "type": "header",
+      "content": "Wordmark"
     },
     {
-      "type": "link_list",
-      "id": "customer_account_menu",
-      "label": "t:labels.customer_account_menu",
-      "default": "customer-account-main-menu"
+      "type": "text",
+      "id": "wordmark",
+      "label": "Wordmark text",
+      "default": "BLACKGROUND"
     },
     {
-      "type": "link_list",
-      "id": "products_menu_men",
-      "label": "Products menu: Men"
+      "type": "url",
+      "id": "wordmark_link",
+      "label": "Wordmark link"
     },
     {
-      "type": "link_list",
-      "id": "products_menu_women",
-      "label": "Products menu: Women"
+      "type": "header",
+      "content": "Left link"
     },
     {
-      "type": "link_list",
-      "id": "products_menu_collections",
-      "label": "Products menu: Collections"
+      "type": "text",
+      "id": "left_label",
+      "label": "Label",
+      "default": "MENU"
+    },
+    {
+      "type": "url",
+      "id": "left_link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Right link"
+    },
+    {
+      "type": "text",
+      "id": "right_label",
+      "label": "Label",
+      "default": "JOIN US"
+    },
+    {
+      "type": "url",
+      "id": "right_link",
+      "label": "Link"
     }
   ]
 }
