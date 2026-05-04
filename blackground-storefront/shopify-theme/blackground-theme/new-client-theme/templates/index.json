@@ -10,12 +10,8 @@
 {
   "sections": {
     "main": {
-      "type": "home-hero",
-      "settings": {
-        "top_background": "shopify://shop_images/blackground-background2.png",
-        "middle_background": "shopify://shop_images/blackground-background3.png",
-        "bottom_background": "shopify://shop_images/blackground-background1.png"
-      }
+      "type": "hero-archetype",
+      "settings": {}
     }
   },
   "order": [
