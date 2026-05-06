@@ -1,49 +1,39 @@
-<section class="hero-archetype full-width">
-  <div class="hero-archetype__stack">
-    <div class="hero-archetype__card hero-archetype__card--back">
-      {% if section.settings.card_back_image != blank %}
-        <img
-          src="{{ section.settings.card_back_image | image_url: width: 1600 }}"
-          alt=""
-          loading="lazy"
-          width="{{ section.settings.card_back_image.width }}"
-          height="{{ section.settings.card_back_image.height }}"
-        >
-      {% endif %}
-    </div>
+{% liquid
+  assign card_setting_ids = 'card_front_image|card_mid_image|card_back_image|card_image_4|card_image_5|card_image_6|card_image_7|card_image_8' | split: '|'
+%}
 
-    <div class="hero-archetype__card hero-archetype__card--mid">
-      {% if section.settings.card_mid_image != blank %}
-        <img
-          src="{{ section.settings.card_mid_image | image_url: width: 1600 }}"
-          alt=""
-          loading="lazy"
-          width="{{ section.settings.card_mid_image.width }}"
-          height="{{ section.settings.card_mid_image.height }}"
-        >
-      {% endif %}
-    </div>
+<section class="hero-archetype full-width" data-card-section>
+  <div class="hero-archetype__stack" data-card-stack>
+    {% for card_setting_id in card_setting_ids %}
+      {% assign card_image = section.settings[card_setting_id] %}
+      {% assign card_depth = 9 | minus: forloop.index %}
+      <div
+        class="hero-archetype__card"
+        data-card
+        data-depth="{{ card_depth }}"
+        data-initial-depth="{{ card_depth }}"
+        style="--card-depth: {{ card_depth }};"
+      >
+        {% if card_image != blank %}
+          <img
+            src="{{ card_image | image_url: width: 1800 }}"
+            alt=""
+            loading="{% if forloop.index <= 3 %}eager{% else %}lazy{% endif %}"
+            width="{{ card_image.width }}"
+            height="{{ card_image.height }}"
+          >
+        {% endif %}
+      </div>
+    {% endfor %}
 
-    <div class="hero-archetype__card hero-archetype__card--front">
-      {% if section.settings.card_front_image != blank %}
-        <img
-          src="{{ section.settings.card_front_image | image_url: width: 1800 }}"
-          alt=""
-          loading="eager"
-          width="{{ section.settings.card_front_image.width }}"
-          height="{{ section.settings.card_front_image.height }}"
-        >
-      {% endif %}
-
-      {% if section.settings.cta_label != blank %}
-        <a
-          class="hero-archetype__cta bg-mono"
-          href="{{ section.settings.cta_link | default: '#' }}"
-        >
-          {{ section.settings.cta_label }}
-        </a>
-      {% endif %}
-    </div>
+    {% if section.settings.cta_label != blank %}
+      <a
+        class="hero-archetype__cta bg-mono"
+        href="{{ section.settings.cta_link | default: '#' }}"
+      >
+        {{ section.settings.cta_label }}
+      </a>
+    {% endif %}
   </div>
 
   <a
@@ -92,13 +82,29 @@
     position: relative;
     width: min(82%, 78rem, calc(var(--hero-available-height) * 16 / 11));
     aspect-ratio: 16 / 11;
+    overflow: hidden;
   }
 
   .hero-archetype__card {
+    --card-offset-top: 8%;
+    --card-offset-inline: 0%;
+    --card-offset-bottom: 0%;
     position: absolute;
+    inset-block-start: var(--card-offset-top);
+    inset-inline: var(--card-offset-inline);
+    inset-block-end: var(--card-offset-bottom);
     border-radius: 100px 100px 0 0;
     background: var(--media-gray);
     overflow: hidden;
+    transform: translate3d(0, calc(100% + 2rem), 0);
+    opacity: 0;
+    z-index: var(--card-depth);
+    pointer-events: none;
+    transition:
+      inset 520ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 300ms ease;
+    will-change: inset, transform, opacity;
   }
 
   .hero-archetype__card img {
@@ -107,28 +113,31 @@
     object-fit: cover;
   }
 
-  .hero-archetype__card--back {
-    inset-block-start: 0;
-    inset-inline: 8%;
-    inset-block-end: 8%;
-    background: var(--media-gray-dark);
-    z-index: 1;
-  }
-
-  .hero-archetype__card--mid {
-    inset-block-start: 3.5%;
-    inset-inline: 4%;
-    inset-block-end: 4%;
-    background: #7f7f7d;
-    z-index: 2;
-  }
-
-  .hero-archetype__card--front {
-    inset-block-start: 8%;
-    inset-inline: 0;
-    inset-block-end: 0;
+  .hero-archetype__card[data-depth='8'] {
+    --card-offset-top: 8%;
+    --card-offset-inline: 0%;
+    --card-offset-bottom: 0%;
     background: var(--media-gray);
-    z-index: 3;
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+
+  .hero-archetype__card[data-depth='7'] {
+    --card-offset-top: 3.5%;
+    --card-offset-inline: 4%;
+    --card-offset-bottom: 4%;
+    background: var(--media-gray-medium);
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+
+  .hero-archetype__card[data-depth='6'] {
+    --card-offset-top: 0%;
+    --card-offset-inline: 8%;
+    --card-offset-bottom: 8%;
+    background: var(--media-gray-dark);
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
   }
 
   .hero-archetype__cta {
@@ -151,7 +160,7 @@
     text-transform: uppercase;
     text-decoration: none;
     transition: background-color 180ms ease, color 180ms ease;
-    z-index: 4;
+    z-index: 9;
   }
 
   .hero-archetype__cta:hover,
@@ -184,6 +193,10 @@
       aspect-ratio: 4 / 5;
     }
 
+    .hero-archetype__card {
+      border-radius: 72px 72px 0 0;
+    }
+
     .hero-archetype__cta {
       min-width: 14rem;
       font-size: 0.8125rem;
@@ -195,6 +208,127 @@
     }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  (() => {
+    const CARD_COUNT = 8;
+    const MIN_VISIBLE_DEPTH = 6;
+    const WHEEL_THRESHOLD = 120;
+    const WHEEL_RESET_MS = 200;
+    const POST_STEP_LOCK_MS = 140;
+    const TRANSITION_MS = 520;
+    const initializedSections = new WeakMap();
+
+    const applyDepths = (cards, depths) => {
+      cards.forEach((card, index) => {
+        const depth = depths[index];
+        card.dataset.depth = String(depth);
+        card.style.setProperty('--card-depth', depth);
+        card.setAttribute('aria-hidden', depth >= MIN_VISIBLE_DEPTH ? 'false' : 'true');
+      });
+    };
+
+    const rotateDepths = (depths, direction) =>
+      depths.map((depth) => {
+        if (direction > 0) {
+          return depth === CARD_COUNT ? 1 : depth + 1;
+        }
+
+        return depth === 1 ? CARD_COUNT : depth - 1;
+      });
+
+    const initSection = (section) => {
+      if (!section || initializedSections.has(section)) {
+        return;
+      }
+
+      const cards = Array.from(section.querySelectorAll('[data-card]'));
+
+      if (cards.length !== CARD_COUNT) {
+        return;
+      }
+
+      let depths = cards.map((card) => Number(card.dataset.initialDepth));
+      let wheelDelta = 0;
+      let resetWheelDeltaTimer = null;
+      let isAnimating = false;
+      let blockUntil = 0;
+
+      applyDepths(cards, depths);
+
+      const unlockAnimation = () => {
+        isAnimating = false;
+        wheelDelta = 0;
+      };
+
+      const step = (direction) => {
+        if (isAnimating) {
+          return;
+        }
+
+        isAnimating = true;
+        blockUntil = window.performance.now() + TRANSITION_MS + POST_STEP_LOCK_MS;
+        depths = rotateDepths(depths, direction);
+        applyDepths(cards, depths);
+        window.setTimeout(unlockAnimation, TRANSITION_MS);
+      };
+
+      const handleWheel = (event) => {
+        event.preventDefault();
+
+        if (window.performance.now() < blockUntil) {
+          return;
+        }
+
+        wheelDelta += event.deltaY;
+
+        window.clearTimeout(resetWheelDeltaTimer);
+        resetWheelDeltaTimer = window.setTimeout(() => {
+          wheelDelta = 0;
+        }, WHEEL_RESET_MS);
+
+        if (Math.abs(wheelDelta) < WHEEL_THRESHOLD || isAnimating) {
+          return;
+        }
+
+        const direction = wheelDelta > 0 ? -1 : 1;
+        wheelDelta = 0;
+        step(direction);
+      };
+
+      const cleanup = () => {
+        section.removeEventListener('wheel', handleWheel);
+        window.clearTimeout(resetWheelDeltaTimer);
+        initializedSections.delete(section);
+      };
+
+      section.addEventListener('wheel', handleWheel, { passive: false });
+      initializedSections.set(section, cleanup);
+    };
+
+    const initAllSections = (root = document) => {
+      root.querySelectorAll('[data-card-section]').forEach(initSection);
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => initAllSections(), { once: true });
+    } else {
+      initAllSections();
+    }
+
+    document.addEventListener('shopify:section:load', (event) => {
+      initAllSections(event.target);
+    });
+
+    document.addEventListener('shopify:section:unload', (event) => {
+      const cleanup = initializedSections.get(event.target);
+
+      if (cleanup) {
+        cleanup();
+      }
+    });
+  })();
+{% endjavascript %}
 
 {% schema %}
 {
@@ -240,17 +374,42 @@
     {
       "type": "image_picker",
       "id": "card_front_image",
-      "label": "Front card image"
+      "label": "Card 1 image"
     },
     {
       "type": "image_picker",
       "id": "card_mid_image",
-      "label": "Middle card image"
+      "label": "Card 2 image"
     },
     {
       "type": "image_picker",
       "id": "card_back_image",
-      "label": "Back card image"
+      "label": "Card 3 image"
+    },
+    {
+      "type": "image_picker",
+      "id": "card_image_4",
+      "label": "Card 4 image"
+    },
+    {
+      "type": "image_picker",
+      "id": "card_image_5",
+      "label": "Card 5 image"
+    },
+    {
+      "type": "image_picker",
+      "id": "card_image_6",
+      "label": "Card 6 image"
+    },
+    {
+      "type": "image_picker",
+      "id": "card_image_7",
+      "label": "Card 7 image"
+    },
+    {
+      "type": "image_picker",
+      "id": "card_image_8",
+      "label": "Card 8 image"
     }
   ],
   "presets": [
