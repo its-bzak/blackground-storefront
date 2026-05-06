@@ -26,11 +26,13 @@
     {{ content_for_header }}
   </head>
 
-  <body>
+  <body{% if request.page_type == 'index' %} class="template-index"{% endif %}>
     {% sections 'header-group' %}
 
     {{ content_for_layout }}
 
-    {% sections 'footer-group' %}
+    {% unless request.page_type == 'index' %}
+      {% sections 'footer-group' %}
+    {% endunless %}
   </body>
 </html>

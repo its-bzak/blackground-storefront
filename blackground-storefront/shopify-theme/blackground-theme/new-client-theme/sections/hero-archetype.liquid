@@ -62,27 +62,41 @@
 </section>
 
 {% stylesheet %}
+  html:has(body.template-index) {
+    overflow: hidden;
+  }
+
+  body.template-index {
+    overflow: hidden;
+  }
+
   .hero-archetype {
+    --hero-block-size: calc(100svh - var(--header-height));
+    --hero-padding-top: clamp(2rem, 5vh, 4rem);
+    --hero-padding-bottom: 0rem;
+    --hero-inline-padding: clamp(1rem, 4vw, 3rem);
+    --hero-available-height: calc(var(--hero-block-size) - var(--hero-padding-top) - var(--hero-padding-bottom));
     position: relative;
     width: 100%;
-    min-height: calc(100svh - var(--header-height));
-    padding-block: clamp(2rem, 5vh, 4rem) clamp(3rem, 7vh, 5rem);
-    padding-inline: clamp(1rem, 4vw, 3rem);
+    block-size: var(--hero-block-size);
+    min-block-size: var(--hero-block-size);
+    padding-block: var(--hero-padding-top) var(--hero-padding-bottom);
+    padding-inline: var(--hero-inline-padding);
     display: grid;
-    place-items: center;
+    justify-items: center;
+    align-items: end;
     overflow: hidden;
   }
 
   .hero-archetype__stack {
     position: relative;
-    width: min(82%, 78rem);
+    width: min(82%, 78rem, calc(var(--hero-available-height) * 16 / 11));
     aspect-ratio: 16 / 11;
-    margin-block-start: 1.5rem;
   }
 
   .hero-archetype__card {
     position: absolute;
-    border-radius: var(--radius-card);
+    border-radius: 100px 100px 0 0;
     background: var(--media-gray);
     overflow: hidden;
   }
@@ -162,11 +176,11 @@
 
   @media screen and (max-width: 749px) {
     .hero-archetype {
-      padding-block-end: 4.5rem;
+      --hero-padding-bottom: 0rem;
     }
 
     .hero-archetype__stack {
-      width: 88%;
+      width: min(88%, calc(var(--hero-available-height) * 4 / 5));
       aspect-ratio: 4 / 5;
     }
 
