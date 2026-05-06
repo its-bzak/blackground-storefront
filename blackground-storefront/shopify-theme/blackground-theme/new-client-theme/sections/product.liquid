@@ -1,45 +1,543 @@
-{% comment %}
-  This section is used in the product template to render product page with
-  media, content, and add-to-cart form.
+{% liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign media_count = product.images.size
+  assign has_media_stack = false
+  if media_count > 1
+    assign has_media_stack = true
+  endif
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/product
-{% endcomment %}
+  assign style_label = 'STYLE'
+  assign size_label = 'SIZE'
 
-<div class="product-images">
-  {% for image in product.images %}
-    {% render 'image', class: 'product-image', image: image %}
-  {% endfor %}
-</div>
+  for option in product.options_with_values
+    assign normalized_name = option.name | strip | downcase
 
-<div class="product-info">
-  <h1>{{ product.title }}</h1>
-  <p>{{ product.price | money }}</p>
-  <p>{{ product.description }}</p>
-</div>
+    if normalized_name == 'color' or normalized_name == 'colour'
+      assign style_label = option.name | upcase
+    endif
 
-<div class="product-form">
-  {% form 'product', product %}
-    {% assign current_variant = product.selected_or_first_available_variant %}
+    if normalized_name == 'size'
+      assign size_label = option.name | upcase
+    endif
+  endfor
+%}
 
-    <select name="id">
-      {% for variant in product.variants %}
-        <option
-          value="{{ variant.id }}"
-          {% if variant == current_variant %}
-            selected="selected"
-          {% endif %}
+<section
+  class="bg-product full-width"
+  data-product-root
+  data-section-id="{{ section.id }}"
+  data-product='{{ product | json | escape }}'
+>
+  <div class="bg-product__inner">
+    <div class="bg-product__layout">
+      <div class="bg-product__media-column">
+        <div
+          class="bg-product__media-shell{% if has_media_stack %} bg-product__media-shell--stacked{% endif %}"
+          data-product-media-stack
         >
-          {{ variant.title }} - {{ variant.price | money }}
-        </option>
-      {% endfor %}
-    </select>
+          <div class="bg-product__media-frame">
+            {% if product.images.size > 0 %}
+              {% for image in product.images %}
+                {% liquid
+                  assign initial_depth = media_count | minus: forloop.index0
+                  assign layer_state = 'hidden'
+                  assign mid_depth = media_count | minus: 1
+                  assign back_depth = media_count | minus: 2
 
-    <input type="text" name="quantity" min="1" value="1">
+                  if initial_depth == media_count
+                    assign layer_state = 'front'
+                  elsif initial_depth == mid_depth
+                    assign layer_state = 'mid'
+                  elsif initial_depth == back_depth
+                    assign layer_state = 'back'
+                  endif
+                %}
+                <div
+                  class="bg-product__media-card{% if forloop.first %} is-active{% endif %}"
+                  data-product-card
+                  data-image-id="{{ image.id }}"
+                  data-depth="{{ initial_depth }}"
+                  data-layer-state="{{ layer_state }}"
+                  style="--card-depth: {{ initial_depth }};"
+                >
+                  <img
+                    class="bg-product__media-image"
+                    src="{{ image | image_url: width: 1400 }}"
+                    alt="{{ image.alt | default: product.title | escape }}"
+                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                    width="{{ image.width }}"
+                    height="{{ image.height }}"
+                  >
+                </div>
+              {% endfor %}
+            {% else %}
+              <div class="bg-product__media-card bg-product__media-card--placeholder is-active" data-product-card data-depth="1" data-layer-state="front">
+                <div class="bg-product__media-placeholder" aria-hidden="true"></div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
 
-    <input type="submit" value="Add to cart">
-    {{ form | payment_button }}
-  {% endform %}
-</div>
+      <div class="bg-product__info-column bg-mono">
+        <div class="bg-product__header-block">
+          <h1 class="bg-product__title">{{ product.title }}</h1>
+          <p class="bg-product__price" data-product-price>{{ current_variant.price | money }}</p>
+        </div>
+
+        {% form 'product', product, class: 'bg-product__form', data-product-form: '' %}
+          <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
+
+          <div class="bg-product__meta-groups">
+            {% for option in product.options_with_values %}
+              {% liquid
+                assign normalized_name = option.name | strip | downcase
+                assign display_label = option.name | upcase
+
+                if normalized_name == 'color' or normalized_name == 'colour'
+                  assign display_label = 'STYLE'
+                elsif normalized_name == 'size'
+                  assign display_label = 'SIZE'
+                endif
+              %}
+              <fieldset class="bg-product__option-group" data-option-group data-option-position="{{ option.position }}" data-option-name="{{ option.name | escape }}">
+                <legend class="bg-product__option-label">{{ display_label }}</legend>
+                <div class="bg-product__option-values">
+                  <select
+                    id="bg-product-option-{{section.id}}-{{ option.position }}"
+                    class="bg-product__option-select"
+                    data-option-select
+                    data-option-position="{{ option.position }}"
+                    data-option-name="{{ option.name | escape }}"
+                  >
+                    {% for value in option.values %}
+                      <option value="{{ value | escape }}"{% if option.selected_value == value %} selected{% endif %}>
+                        {{ value | upcase }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </fieldset>
+            {% endfor %}
+          </div>
+
+          <div class="bg-product__description rte">
+            {{ product.description }}
+          </div>
+
+          <div class="bg-product__actions">
+            <button
+              class="bg-product__add-to-bag"
+              type="submit"
+              data-add-to-cart
+              {% unless current_variant.available %}disabled{% endunless %}
+            >
+              {% if current_variant.available %}
+                ADD TO BAG
+              {% else %}
+                SOLD OUT
+              {% endif %}
+            </button>
+          </div>
+        {% endform %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .bg-product {
+    padding-block: clamp(1.75rem, 4vw, 3rem) clamp(3rem, 7vw, 5.5rem);
+    padding-inline: clamp(1rem, 3vw, 2.5rem);
+    color: var(--gold);
+  }
+
+  .bg-product__inner {
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+  }
+
+  .bg-product__layout {
+    display: grid;
+    grid-template-columns: minmax(18rem, 0.92fr) minmax(22rem, 1.08fr);
+    column-gap: 0;
+    row-gap: clamp(1.4rem, 2.75vw, 2rem);
+    align-items: start;
+  }
+
+  .bg-product__media-column {
+    min-width: 0;
+  }
+
+  .bg-product__media-shell {
+    position: sticky;
+    top: calc(var(--header-height, 0px) + 1.5rem);
+    width: min(100%, 34rem);
+  }
+
+  .bg-product__media-shell--stacked {
+    cursor: pointer;
+  }
+
+  .bg-product__media-frame {
+    position: relative;
+    aspect-ratio: 0.77;
+    min-height: min(70vh, 48rem);
+    border-radius: clamp(2rem, 2.5vw, 2.8rem);
+    overflow: hidden;
+  }
+
+  .bg-product__media-card {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    overflow: hidden;
+    background: var(--media-gray);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate3d(0, 0, 0) scale(1.01);
+    transition:
+      transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 300ms ease;
+    will-change: transform, opacity;
+  }
+
+  .bg-product__media-card--placeholder,
+  .bg-product__media-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--media-gray);
+  }
+
+  .bg-product__media-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .bg-product__media-card.is-active {
+    z-index: 2;
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    pointer-events: auto;
+  }
+
+  .bg-product__media-card.is-previous {
+    z-index: 1;
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  .bg-product__info-column {
+    min-width: 0;
+    padding-top: clamp(0.2rem, 0.6vw, 0.6rem);
+    margin-inline-start: calc(clamp(2rem, 2.5vw, 2.8rem) * -1);
+    position: relative;
+    z-index: 3;
+  }
+
+  .bg-product__header-block {
+    display: grid;
+    gap: 0.35rem;
+    margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
+  }
+
+  .bg-product__title,
+  .bg-product__price,
+  .bg-product__option-label,
+  .bg-product__description,
+  .bg-product__add-to-bag,
+  .bg-product__option-value {
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .bg-product__title,
+  .bg-product__price,
+  .bg-product__option-label,
+  .bg-product__add-to-bag,
+  .bg-product__option-value {
+    font-size: clamp(1rem, 1.05vw, 1.15rem);
+    line-height: 1.15;
+  }
+
+  .bg-product__title,
+  .bg-product__price {
+    margin: 0;
+  }
+
+  .bg-product__form {
+    display: grid;
+    gap: clamp(1.75rem, 3vw, 2.5rem);
+  }
+
+  .bg-product__meta-groups {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .bg-product__option-group {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    display: grid;
+    gap: 0.45rem;
+  }
+
+  .bg-product__option-label {
+    margin: 0;
+  }
+
+  .bg-product__option-values {
+    position: relative;
+    display: inline-flex;
+    width: min(100%, 20rem);
+  }
+
+  .bg-product__option-select {
+    width: 100%;
+    min-width: 0;
+    padding: 0 1rem 0 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--gold);
+    font: inherit;
+    font-size: clamp(1rem, 1.05vw, 1.15rem);
+    letter-spacing: 0.08em;
+    line-height: 1.15;
+    text-transform: uppercase;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+  }
+
+  .bg-product__option-select option {
+    background: var(--bg);
+    color: var(--gold);
+  }
+
+  .bg-product__option-values::after {
+    content: '\2304';
+    position: absolute;
+    inset-inline-end: 0;
+    inset-block-start: 50%;
+    transform: translateY(-52%);
+    font-size: 0.8em;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .bg-product__description {
+    max-width: 30ch;
+    font-size: clamp(0.96rem, 0.98vw, 1.06rem);
+    line-height: 1.45;
+    text-transform: none;
+  }
+
+  .bg-product__description > :first-child {
+    margin-top: 0;
+  }
+
+  .bg-product__description > :last-child {
+    margin-bottom: 0;
+  }
+
+  .bg-product__actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .bg-product__add-to-bag {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--gold);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .bg-product__add-to-bag:hover,
+  .bg-product__add-to-bag:focus-visible {
+    color: var(--white-soft);
+  }
+
+  .bg-product__add-to-bag:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  @media screen and (max-width: 1099px) {
+    .bg-product__layout {
+      grid-template-columns: 1fr;
+    }
+
+    .bg-product__media-shell {
+      position: relative;
+      top: auto;
+      width: min(100%, 30rem);
+    }
+
+    .bg-product__info-column {
+      padding-top: 0;
+      margin-inline-start: 0;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .bg-product {
+      padding-block-start: 1.25rem;
+    }
+
+    .bg-product__media-shell {
+      width: 100%;
+    }
+
+    .bg-product__media-frame {
+      min-height: auto;
+    }
+
+    .bg-product__description {
+      max-width: none;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (() => {
+    const section = document.querySelector('[data-section-id="{{ section.id }}"]');
+
+    if (!section) {
+      return;
+    }
+
+    const productData = JSON.parse(section.dataset.product || '{}');
+    const variantInput = section.querySelector('[data-variant-id]');
+    const priceNode = section.querySelector('[data-product-price]');
+    const addToCartButton = section.querySelector('[data-add-to-cart]');
+    const optionSelects = Array.from(section.querySelectorAll('[data-option-select]'));
+    const optionGroups = Array.from(section.querySelectorAll('[data-option-group]'));
+    const mediaStack = section.querySelector('[data-product-media-stack]');
+    const mediaCards = Array.from(section.querySelectorAll('[data-product-card]'));
+    const formatter = new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: '{{ cart.currency.iso_code }}'
+    });
+
+    const variants = Array.isArray(productData.variants) ? productData.variants : [];
+    const selectedOptions = {};
+
+    optionGroups.forEach((group) => {
+      const position = Number(group.dataset.optionPosition);
+      const selectedSelect = group.querySelector('[data-option-select]');
+
+      if (selectedSelect) {
+        selectedOptions[position] = selectedSelect.value;
+      }
+    });
+
+    const findMatchingVariant = () => variants.find((variant) => {
+      return Object.keys(selectedOptions).every((key) => {
+        const optionIndex = Number(key) - 1;
+        return variant.options?.[optionIndex] === selectedOptions[key];
+      });
+    });
+
+    const getVariantImageId = (variant) => {
+      if (!variant) {
+        return null;
+      }
+
+      return variant.featured_image?.id || variant.featured_media?.id || null;
+    };
+
+    let activeMediaIndex = 0;
+    let isMediaTransitionLocked = false;
+
+    const applyActiveMedia = (targetIndex) => {
+      if (!mediaCards.length) {
+        return;
+      }
+
+      const normalizedIndex = ((targetIndex % mediaCards.length) + mediaCards.length) % mediaCards.length;
+      const previousIndex = activeMediaIndex;
+
+      mediaCards.forEach((card, index) => {
+        card.classList.toggle('is-active', index === normalizedIndex);
+        card.classList.toggle('is-previous', index === previousIndex && previousIndex !== normalizedIndex);
+      });
+
+      activeMediaIndex = normalizedIndex;
+    };
+
+    const setActiveMediaByImageId = (imageId) => {
+      if (!mediaCards.length) {
+        return;
+      }
+
+      if (!imageId) {
+        applyActiveMedia(0);
+        return;
+      }
+
+      const matchIndex = mediaCards.findIndex((card) => String(card.dataset.imageId) === String(imageId));
+      applyActiveMedia(matchIndex >= 0 ? matchIndex : 0);
+    };
+
+    const applyVariant = (variant) => {
+      if (!variantInput || !priceNode || !addToCartButton) {
+        return;
+      }
+
+      if (!variant) {
+        variantInput.value = '';
+        addToCartButton.disabled = true;
+        addToCartButton.textContent = 'UNAVAILABLE';
+        return;
+      }
+
+      variantInput.value = variant.id;
+      priceNode.textContent = formatter.format((variant.price || 0) / 100);
+      addToCartButton.disabled = !variant.available;
+      addToCartButton.textContent = variant.available ? 'ADD TO BAG' : 'SOLD OUT';
+      setActiveMediaByImageId(getVariantImageId(variant));
+    };
+
+    optionSelects.forEach((select) => {
+      select.addEventListener('change', () => {
+        const position = Number(select.dataset.optionPosition);
+        selectedOptions[position] = select.value;
+        applyVariant(findMatchingVariant());
+      });
+    });
+
+    if (mediaStack && mediaCards.length > 1) {
+      mediaStack.addEventListener('click', () => {
+        if (isMediaTransitionLocked) {
+          return;
+        }
+
+        isMediaTransitionLocked = true;
+        applyActiveMedia(activeMediaIndex + 1);
+
+        window.setTimeout(() => {
+          mediaCards.forEach((card) => {
+            card.classList.remove('is-previous');
+          });
+          isMediaTransitionLocked = false;
+        }, 320);
+      });
+    }
+
+    applyVariant(findMatchingVariant() || variants.find((variant) => String(variant.id) === variantInput?.value));
+  })();
+{% endjavascript %}
 
 {% schema %}
 {
