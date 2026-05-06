@@ -1,43 +1,557 @@
-{% comment %}
-  This section is used in the collection template to render collection page
-  listing all products within a collection.
+{% liquid
+  assign collection_label = collection.title | escape
+  if collection.handle == 'all'
+    assign collection_label = 'Our Products'
+  endif
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
-{% endcomment %}
+  assign collection_filter = blank
+  assign size_filter = blank
+  assign color_filter = blank
+  assign gender_filter = blank
+  assign collection_filter_label = 'COLLECTION'
+  assign size_filter_label = 'SIZE'
+  assign color_filter_label = 'COLOR'
+  assign gender_filter_label = 'GENDER'
+  assign sort_filter_label = 'ORDER BY:'
 
-<h1>{{ collection.title }}</h1>
+  for filter in collection.filters
+    assign normalized_label = filter.label | strip | downcase
 
-<div class="collection-products">
-  {% paginate collection.products by 20 %}
-    {% for product in collection.products %}
-      <div class="collection-product">
-        {% if product.featured_image %}
-          {% render 'image',
-            class: 'collection-product__image',
-            image: product.featured_image,
-            url: product.url,
-            width: 400,
-            height: 400,
-            crop: 'center'
-          %}
-        {% endif %}
-        <div class="collection-product__content">
-          <p>{{ product.title | escape | link_to: product.url }}</p>
-          <p>{{ product.price | money }}</p>
+    case normalized_label
+      when 'collection'
+        assign collection_filter = filter
+      when 'size'
+        assign size_filter = filter
+      when 'color', 'colour'
+        assign color_filter = filter
+      when 'gender'
+        assign gender_filter = filter
+    endcase
+  endfor
+%}
+
+{% paginate collection.products by 24 %}
+  <section class="bg-collection full-width">
+    <div class="bg-collection__inner">
+      <div class="bg-collection__toolbar">
+        <h1 class="bg-collection__label bg-mono">{{ collection_label }}</h1>
+
+        <div class="bg-collection__filters bg-mono">
+          {% assign sort_value = collection.sort_by %}
+
+          {% if collection_filter != blank %}
+            {% for filter_value in collection_filter.values %}
+              {% if filter_value.active %}
+                {% assign collection_filter_label = filter_value.label | upcase %}
+                {% break %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+          {% if size_filter != blank %}
+            {% for filter_value in size_filter.values %}
+              {% if filter_value.active %}
+                {% assign size_filter_label = filter_value.label | upcase %}
+                {% break %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+          {% if color_filter != blank %}
+            {% for filter_value in color_filter.values %}
+              {% if filter_value.active %}
+                {% assign color_filter_label = filter_value.label | upcase %}
+                {% break %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+          {% if gender_filter != blank %}
+            {% for filter_value in gender_filter.values %}
+              {% if filter_value.active %}
+                {% assign gender_filter_label = filter_value.label | upcase %}
+                {% break %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+          {% for option in collection.sort_options %}
+            {% if option.value == sort_value and sort_value != blank %}
+              {% assign sort_filter_label = option.name | upcase %}
+              {% break %}
+            {% endif %}
+          {% endfor %}
+
+          {% if collection_filter != blank %}
+            <div class="bg-collection__filter-menu">
+              <button class="bg-collection__filter-trigger" type="button" aria-expanded="false">{{ collection_filter_label }}</button>
+              <div class="bg-collection__filter-dropdown" role="menu">
+                <a class="bg-collection__filter-option" href="{{ collection_filter.url_to_remove | default: collection.url }}" role="menuitem">ANY</a>
+                {% for filter_value in collection_filter.values %}
+                  {% if filter_value.count > 0 or filter_value.active %}
+                    <a class="bg-collection__filter-option{% if filter_value.active %} is-active{% endif %}" href="{% if filter_value.active %}{{ filter_value.url_to_remove }}{% else %}{{ filter_value.url_to_add }}{% endif %}" role="menuitem">{{ filter_value.label | upcase }}</a>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          {% if size_filter != blank %}
+            <div class="bg-collection__filter-menu">
+              <button class="bg-collection__filter-trigger" type="button" aria-expanded="false">{{ size_filter_label }}</button>
+              <div class="bg-collection__filter-dropdown" role="menu">
+                <a class="bg-collection__filter-option" href="{{ size_filter.url_to_remove | default: collection.url }}" role="menuitem">ANY</a>
+                {% for filter_value in size_filter.values %}
+                  {% if filter_value.count > 0 or filter_value.active %}
+                    <a class="bg-collection__filter-option{% if filter_value.active %} is-active{% endif %}" href="{% if filter_value.active %}{{ filter_value.url_to_remove }}{% else %}{{ filter_value.url_to_add }}{% endif %}" role="menuitem">{{ filter_value.label | upcase }}</a>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          {% if color_filter != blank %}
+            <div class="bg-collection__filter-menu">
+              <button class="bg-collection__filter-trigger" type="button" aria-expanded="false">{{ color_filter_label }}</button>
+              <div class="bg-collection__filter-dropdown" role="menu">
+                <a class="bg-collection__filter-option" href="{{ color_filter.url_to_remove | default: collection.url }}" role="menuitem">ANY</a>
+                {% for filter_value in color_filter.values %}
+                  {% if filter_value.count > 0 or filter_value.active %}
+                    <a class="bg-collection__filter-option{% if filter_value.active %} is-active{% endif %}" href="{% if filter_value.active %}{{ filter_value.url_to_remove }}{% else %}{{ filter_value.url_to_add }}{% endif %}" role="menuitem">{{ filter_value.label | upcase }}</a>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          {% if gender_filter != blank %}
+            <div class="bg-collection__filter-menu">
+              <button class="bg-collection__filter-trigger" type="button" aria-expanded="false">{{ gender_filter_label }}</button>
+              <div class="bg-collection__filter-dropdown" role="menu">
+                <a class="bg-collection__filter-option" href="{{ gender_filter.url_to_remove | default: collection.url }}" role="menuitem">ANY</a>
+                {% for filter_value in gender_filter.values %}
+                  {% if filter_value.count > 0 or filter_value.active %}
+                    <a class="bg-collection__filter-option{% if filter_value.active %} is-active{% endif %}" href="{% if filter_value.active %}{{ filter_value.url_to_remove }}{% else %}{{ filter_value.url_to_add }}{% endif %}" role="menuitem">{{ filter_value.label | upcase }}</a>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+
+          <div class="bg-collection__filter-menu">
+            <button class="bg-collection__filter-trigger" type="button" aria-expanded="false">{{ sort_filter_label }}</button>
+            <div class="bg-collection__filter-dropdown" role="menu">
+              <button class="bg-collection__filter-option" type="button" data-sort-value="" role="menuitem">ANY</button>
+              {% for option in collection.sort_options %}
+                {% liquid
+                  assign option_key = option.value | downcase
+                  assign include_option = false
+
+                  if option_key contains 'title-ascending' or option_key contains 'title-descending' or option_key contains 'price-ascending' or option_key contains 'price-descending' or option_key contains 'created-ascending' or option_key contains 'created-descending'
+                    assign include_option = true
+                  endif
+                %}
+                {% if include_option %}
+                  <button class="bg-collection__filter-option{% if option.value == sort_value %} is-active{% endif %}" type="button" data-sort-value="{{ option.value }}" role="menuitem">{{ option.name | upcase }}</button>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
         </div>
       </div>
-    {% endfor %}
 
-    {{ paginate | default_pagination }}
-  {% endpaginate %}
-</div>
+      <div class="bg-collection__grid" role="list">
+        {% for product in collection.products %}
+          <div class="bg-collection__item" role="listitem">
+            {% render 'product-card-blackground', product: product %}
+          </div>
+        {% endfor %}
+      </div>
+
+      {% if paginate.pages > 1 %}
+        <nav class="bg-collection__pagination bg-mono" aria-label="Collection pagination">
+          {{ paginate | default_pagination }}
+        </nav>
+      {% endif %}
+    </div>
+  </section>
+{% endpaginate %}
 
 {% stylesheet %}
-  .collection-products {
+  .bg-collection {
+    padding-block: clamp(2rem, 6vw, 4rem) clamp(4rem, 8vw, 6rem);
+    padding-inline: clamp(1rem, 3vw, 2.5rem);
+    color: var(--gold);
+  }
+
+  .bg-collection__inner {
+    width: min(
+      calc(var(--page-width) - var(--page-margin) * 2),
+      calc(100% - var(--page-margin) * 2)
+    );
+    margin-inline: auto;
+  }
+
+  .bg-collection__label {
+    margin: 0;
+    font-size: clamp(1.25rem, 1.35vw, 1.7rem);
+    letter-spacing: 0.08em;
+    line-height: 1;
+  }
+
+  .bg-collection__toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 2rem;
+    margin-block: 0 clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .bg-collection__filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: baseline;
+    gap: clamp(1rem, 2vw, 2rem);
+  }
+
+  .bg-collection__filter-menu {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .bg-collection__filter-trigger {
+    min-width: 0;
+    padding: 0 1rem 0 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--gold);
+    font: inherit;
+    font-size: clamp(0.92rem, 0.95vw, 1rem);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .bg-collection__filter-menu::after {
+    content: '\2304';
+    position: absolute;
+    inset-inline-end: 0;
+    inset-block-start: 50%;
+    transform: translateY(-52%);
+    font-size: 0.8em;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .bg-collection__filter-dropdown {
+    position: absolute;
+    inset-block-start: calc(100% + 0.7rem);
+    inset-inline-start: 0;
+    z-index: 20;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    min-width: max-content;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid color-mix(in srgb, var(--gold) 22%, transparent);
+    background: rgba(17, 17, 17, 0.96);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(0.35rem);
+    transition: opacity 160ms ease, transform 160ms ease;
+  }
+
+  .bg-collection__filter-menu.is-open .bg-collection__filter-dropdown,
+  .bg-collection__filter-menu:focus-within .bg-collection__filter-dropdown {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .bg-collection__filter-option {
+    border: 0;
+    background: transparent;
+    color: var(--gold);
+    font: inherit;
+    font-size: clamp(0.88rem, 0.92vw, 0.96rem);
+    letter-spacing: 0.08em;
+    line-height: 1.1;
+    text-align: left;
+    text-decoration: none;
+    text-transform: uppercase;
+    padding: 0.25rem 0;
+    cursor: pointer;
+  }
+
+  .bg-collection__filter-option.is-active,
+  .bg-collection__filter-option:hover,
+  .bg-collection__filter-option:focus-visible {
+    color: var(--white-soft);
+  }
+
+  .bg-collection__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(2.5rem, 4vw, 4rem) clamp(2rem, 3vw, 3rem);
+    align-items: start;
+  }
+
+  .bg-product-card {
+    display: grid;
+    gap: 1rem;
+    color: var(--gold);
+  }
+
+  .bg-product-card__media-link {
+    display: block;
+    text-decoration: none;
+  }
+
+  .bg-product-card__media {
+    position: relative;
+    aspect-ratio: 4 / 5.35;
+    border-radius: clamp(1.8rem, 2vw, 2.5rem);
+    overflow: hidden;
+  }
+
+  .bg-product-card__media--stacked {
+    isolation: isolate;
+  }
+
+  .bg-product-card__layer {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    overflow: hidden;
+    background: var(--media-gray);
+    transition:
+      transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 280ms ease;
+    will-change: transform, opacity;
+  }
+
+  .bg-product-card__layer--placeholder {
+    background: var(--media-gray);
+  }
+
+  .bg-product-card__layer--front {
+    z-index: 3;
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+
+  .bg-product-card__layer--mid {
+    z-index: 2;
+    background: var(--media-gray-medium);
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+
+  .bg-product-card__layer--back {
+    z-index: 1;
+    background: var(--media-gray-dark);
+    transform: translate3d(0, 0.65rem, 0) scale(0.985);
+    opacity: 0;
+  }
+
+  .bg-product-card--stacked:hover .bg-product-card__layer--front,
+  .bg-product-card--stacked:focus-within .bg-product-card__layer--front {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+
+  .bg-product-card--stacked:hover .bg-product-card__layer--mid,
+  .bg-product-card--stacked:focus-within .bg-product-card__layer--mid {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+    z-index: 3;
+  }
+
+  .bg-product-card--stacked:hover .bg-product-card__layer--back,
+  .bg-product-card--stacked:focus-within .bg-product-card__layer--back {
+    transform: translate3d(0, 0.35rem, 0) scale(0.9925);
+    opacity: 0.35;
+    z-index: 2;
+  }
+
+  .bg-product-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .bg-product-card__content {
+    display: grid;
+    justify-items: center;
+    gap: 0.2rem;
+    text-align: center;
+    line-height: 1.1;
+    letter-spacing: 0.08em;
+  }
+
+  .bg-product-card__title,
+  .bg-product-card__price {
+    color: var(--gold);
+    text-decoration: none;
+    font-size: clamp(0.92rem, 0.95vw, 1rem);
+  }
+
+  .bg-product-card__title {
+    text-transform: uppercase;
+  }
+
+  .bg-collection__pagination {
+    margin-block-start: clamp(3rem, 5vw, 4rem);
+  }
+
+  .bg-collection__pagination .pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .bg-collection__pagination a,
+  .bg-collection__pagination span {
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  @media screen and (max-width: 1099px) {
+    .bg-collection__toolbar {
+      align-items: start;
+      flex-direction: column;
+    }
+
+    .bg-collection__filters {
+      justify-content: start;
+    }
+
+    .bg-collection__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (hover: none) {
+    .bg-product-card--stacked:hover .bg-product-card__layer--front,
+    .bg-product-card--stacked:hover .bg-product-card__layer--mid,
+    .bg-product-card--stacked:hover .bg-product-card__layer--back {
+      transform: none;
+      opacity: initial;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .bg-collection {
+      padding-block-start: 1.5rem;
+    }
+
+    .bg-collection__grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2.5rem;
+    }
+
+    .bg-collection__toolbar {
+      margin-block-end: 2rem;
+    }
+
+    .bg-collection__label {
+      font-size: 1.1rem;
+    }
+
+    .bg-collection__filters {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem 1.5rem;
+    }
+
+    .bg-collection__filter-menu {
+      width: 100%;
+    }
+
+    .bg-collection__filter-trigger {
+      width: 100%;
+      text-align: left;
+    }
+
+    .bg-collection__filter-dropdown {
+      min-width: 100%;
+    }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  (() => {
+    const closeMenus = (scope = document) => {
+      scope.querySelectorAll('.bg-collection__filter-menu.is-open').forEach((menu) => {
+        menu.classList.remove('is-open');
+
+        const trigger = menu.querySelector('.bg-collection__filter-trigger');
+
+        if (trigger) {
+          trigger.setAttribute('aria-expanded', 'false');
+        }
+      });
+    };
+
+    document.addEventListener('click', (event) => {
+      const trigger = event.target.closest('.bg-collection__filter-trigger');
+
+      if (trigger) {
+        const menu = trigger.closest('.bg-collection__filter-menu');
+        const shouldOpen = !menu.classList.contains('is-open');
+
+        closeMenus();
+
+        if (shouldOpen) {
+          menu.classList.add('is-open');
+          trigger.setAttribute('aria-expanded', 'true');
+        }
+
+        return;
+      }
+
+      if (!event.target.closest('.bg-collection__filter-menu')) {
+        closeMenus();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeMenus();
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      const sortOption = event.target.closest('[data-sort-value]');
+
+      if (!sortOption) {
+        return;
+      }
+
+      closeMenus();
+
+      const url = new URL(window.location.href);
+      const sortValue = sortOption.dataset.sortValue;
+
+      url.searchParams.delete('page');
+
+      if (sortValue) {
+        url.searchParams.set('sort_by', sortValue);
+      } else {
+        url.searchParams.delete('sort_by');
+      }
+
+      window.location.assign(url.toString());
+    });
+  })();
+{% endjavascript %}
 
 {% schema %}
 {

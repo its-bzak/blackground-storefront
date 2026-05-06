@@ -1,0 +1,53 @@
+{% liquid
+  assign stack_count = product.images.size
+  if stack_count > 3
+    assign stack_count = 3
+  endif
+
+  assign has_hover_stack = false
+  if stack_count > 1
+    assign has_hover_stack = true
+  endif
+%}
+
+<article class="bg-product-card{% if has_hover_stack %} bg-product-card--stacked{% endif %}">
+  <a
+    class="bg-product-card__media-link"
+    href="{{ product.url }}"
+    aria-label="{{ product.title | escape }}"
+  >
+    <div class="bg-product-card__media{% if has_hover_stack %} bg-product-card__media--stacked{% endif %}">
+      {% if product.featured_image %}
+        {% for image in product.images limit: 3 %}
+          {% liquid
+            assign layer_class = 'bg-product-card__layer--front'
+
+            case forloop.index
+              when 2
+                assign layer_class = 'bg-product-card__layer--mid'
+              when 3
+                assign layer_class = 'bg-product-card__layer--back'
+            endcase
+          %}
+          <div class="bg-product-card__layer {{ layer_class }}">
+            <img
+              class="bg-product-card__image"
+              src="{{ image | image_url: width: 900 }}"
+              alt="{{ image.alt | default: product.title | escape }}"
+              loading="lazy"
+              width="{{ image.width }}"
+              height="{{ image.height }}"
+            >
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="bg-product-card__layer bg-product-card__layer--front bg-product-card__layer--placeholder"></div>
+      {% endif %}
+    </div>
+  </a>
+
+  <div class="bg-product-card__content bg-mono">
+    <a class="bg-product-card__title" href="{{ product.url }}">{{ product.title | escape }}</a>
+    <p class="bg-product-card__price">{{ product.price | money }}</p>
+  </div>
+</article>
