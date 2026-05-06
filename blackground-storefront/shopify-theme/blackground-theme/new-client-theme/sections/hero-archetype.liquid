@@ -140,6 +140,16 @@
     opacity: 1;
   }
 
+  .hero-archetype__card[data-exiting='true'] {
+    --card-offset-top: 0%;
+    --card-offset-inline: 8%;
+    --card-offset-bottom: 8%;
+    background: var(--media-gray-dark);
+    transform: translate3d(0, 0.75rem, 0);
+    opacity: 0;
+    z-index: 6;
+  }
+
   .hero-archetype__cta {
     position: absolute;
     inset-block-end: clamp(1.5rem, 5%, 3rem);
@@ -221,7 +231,15 @@
 
     const applyDepths = (cards, depths) => {
       cards.forEach((card, index) => {
+        const previousDepth = Number(card.dataset.depth || card.dataset.initialDepth);
         const depth = depths[index];
+
+        if (previousDepth === 6 && depth === 5) {
+          card.dataset.exiting = 'true';
+        } else {
+          delete card.dataset.exiting;
+        }
+
         card.dataset.depth = String(depth);
         card.style.setProperty('--card-depth', depth);
         card.setAttribute('aria-hidden', depth >= MIN_VISIBLE_DEPTH ? 'false' : 'true');
