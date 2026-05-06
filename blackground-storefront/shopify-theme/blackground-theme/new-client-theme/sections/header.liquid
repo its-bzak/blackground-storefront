@@ -12,7 +12,12 @@
       href="{{ section.settings.wordmark_link | default: routes.root_url }}"
       aria-label="{{ shop.name }}"
     >
-      {{ section.settings.wordmark | default: 'BLACKGROUND' }}
+      <img
+        class="bg-header__wordmark-image"
+        src="{{ 'blackground_logo_text.png' | asset_url }}"
+        alt="{{ shop.name }}"
+        loading="eager"
+      >
     </a>
 
     <a
@@ -31,7 +36,6 @@
     inset-block-start: 0;
     z-index: 100;
     height: var(--header-height);
-    background-color: var(--header-bg);
     color: var(--gold);
   }
 
@@ -59,9 +63,13 @@
   .bg-header__wordmark {
     justify-self: center;
     color: var(--gold);
-    font-size: clamp(1.25rem, 1rem + 1vw, 1.875rem);
     line-height: 1;
-    letter-spacing: 0.04em;
+  }
+
+  .bg-header__wordmark-image {
+    display: block;
+    width: clamp(9rem, 16vw, 14rem);
+    height: auto;
   }
 
   @media screen and (max-width: 480px) {
