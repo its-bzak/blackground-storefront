@@ -2,8 +2,20 @@
   assign current_variant = product.selected_or_first_available_variant
   assign media_count = product.images.size
   assign has_media_stack = false
+  assign archetype = product.metafields.custom.archetype.value
+  assign care_instructions = product.metafields.custom.care_instructions
+  assign fit_details = product.metafields.custom.fit
+  assign default_detail_key = ''
   if media_count > 1
     assign has_media_stack = true
+  endif
+
+  if product.description != blank
+    assign default_detail_key = 'description'
+  elsif care_instructions != blank
+    assign default_detail_key = 'care'
+  elsif fit_details != blank
+    assign default_detail_key = 'fit'
   endif
 
   assign style_label = 'STYLE'
@@ -80,64 +92,183 @@
       </div>
 
       <div class="bg-product__info-column bg-mono">
-        <div class="bg-product__header-block">
-          <h1 class="bg-product__title">{{ product.title }}</h1>
-          <p class="bg-product__price" data-product-price>{{ current_variant.price | money }}</p>
-        </div>
-
         {% form 'product', product, class: 'bg-product__form', data-product-form: '' %}
           <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
 
-          <div class="bg-product__meta-groups">
-            {% for option in product.options_with_values %}
-              {% liquid
-                assign normalized_name = option.name | strip | downcase
-                assign display_label = option.name | upcase
+          <div class="bg-product__info-grid">
+            {% if product.description != blank %}
+              <input
+                id="bg-product-detail-toggle-description-{{ section.id }}"
+                class="bg-product__detail-toggle"
+                type="radio"
+                name="bg-product-detail-toggle-{{ section.id }}"
+                {% if default_detail_key == 'description' %}checked{% endif %}
+              >
+            {% endif %}
 
-                if normalized_name == 'color' or normalized_name == 'colour'
-                  assign display_label = 'STYLE'
-                elsif normalized_name == 'size'
-                  assign display_label = 'SIZE'
-                endif
-              %}
-              <fieldset class="bg-product__option-group" data-option-group data-option-position="{{ option.position }}" data-option-name="{{ option.name | escape }}">
-                <legend class="bg-product__option-label">{{ display_label }}</legend>
-                <div class="bg-product__option-values">
-                  <select
-                    id="bg-product-option-{{section.id}}-{{ option.position }}"
-                    class="bg-product__option-select"
-                    data-option-select
-                    data-option-position="{{ option.position }}"
-                    data-option-name="{{ option.name | escape }}"
-                  >
-                    {% for value in option.values %}
-                      <option value="{{ value | escape }}"{% if option.selected_value == value %} selected{% endif %}>
-                        {{ value | upcase }}
-                      </option>
-                    {% endfor %}
-                  </select>
+            {% if care_instructions != blank %}
+              <input
+                id="bg-product-detail-toggle-care-{{ section.id }}"
+                class="bg-product__detail-toggle"
+                type="radio"
+                name="bg-product-detail-toggle-{{ section.id }}"
+                {% if default_detail_key == 'care' %}checked{% endif %}
+              >
+            {% endif %}
+
+            {% if fit_details != blank %}
+              <input
+                id="bg-product-detail-toggle-fit-{{ section.id }}"
+                class="bg-product__detail-toggle"
+                type="radio"
+                name="bg-product-detail-toggle-{{ section.id }}"
+                {% if default_detail_key == 'fit' %}checked{% endif %}
+              >
+            {% endif %}
+
+            <div class="bg-product__info-left">
+              <div class="bg-product__header-block">
+                <h1 class="bg-product__title">{{ product.title }}</h1>
+                <p class="bg-product__price" data-product-price>{{ current_variant.price | money }}</p>
+              </div>
+
+              <div class="bg-product__meta-groups">
+                {% for option in product.options_with_values %}
+                  {% liquid
+                    assign normalized_name = option.name | strip | downcase
+                    assign display_label = option.name | upcase
+
+                    if normalized_name == 'color' or normalized_name == 'colour'
+                      assign display_label = 'STYLE'
+                    elsif normalized_name == 'size'
+                      assign display_label = 'SIZE'
+                    endif
+                  %}
+                  <fieldset class="bg-product__option-group" data-option-group data-option-position="{{ option.position }}" data-option-name="{{ option.name | escape }}">
+                    <legend class="bg-product__option-label">{{ display_label }}</legend>
+                    <div class="bg-product__option-values">
+                      <select
+                        id="bg-product-option-{{section.id}}-{{ option.position }}"
+                        class="bg-product__option-select"
+                        data-option-select
+                        data-option-position="{{ option.position }}"
+                        data-option-name="{{ option.name | escape }}"
+                      >
+                        {% for value in option.values %}
+                          <option value="{{ value | escape }}"{% if option.selected_value == value %} selected{% endif %}>
+                            {{ value | upcase }}
+                          </option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </fieldset>
+                {% endfor %}
+              </div>
+
+              {% if archetype != blank %}
+                <div class="bg-product__archetype">
+                  <p class="bg-product__archetype-label">ARCHETYPE</p>
+                  <p class="bg-product__archetype-value">{{ archetype }}</p>
                 </div>
-              </fieldset>
-            {% endfor %}
-          </div>
-
-          <div class="bg-product__description rte">
-            {{ product.description }}
-          </div>
-
-          <div class="bg-product__actions">
-            <button
-              class="bg-product__add-to-bag"
-              type="submit"
-              data-add-to-cart
-              {% unless current_variant.available %}disabled{% endunless %}
-            >
-              {% if current_variant.available %}
-                ADD TO BAG
-              {% else %}
-                SOLD OUT
               {% endif %}
-            </button>
+
+              {% if product.description != blank or care_instructions != blank or fit_details != blank %}
+                <div class="bg-product__details" data-product-details>
+                  {% if product.description != blank %}
+                    <div class="bg-product__detail-item" data-product-detail-item>
+                      <label
+                        class="bg-product__detail-trigger"
+                        for="bg-product-detail-toggle-description-{{ section.id }}"
+                      >
+                        <span>DESCRIPTION</span>
+                        <span class="bg-product__detail-icon" aria-hidden="true">+</span>
+                      </label>
+                    </div>
+                  {% endif %}
+
+                  {% if care_instructions != blank %}
+                    <div class="bg-product__detail-item" data-product-detail-item>
+                      <label
+                        class="bg-product__detail-trigger"
+                        for="bg-product-detail-toggle-care-{{ section.id }}"
+                      >
+                        <span>CARE INSTRUCTIONS</span>
+                        <span class="bg-product__detail-icon" aria-hidden="true">+</span>
+                      </label>
+                    </div>
+                  {% endif %}
+
+                  {% if fit_details != blank %}
+                    <div class="bg-product__detail-item" data-product-detail-item>
+                      <label
+                        class="bg-product__detail-trigger"
+                        for="bg-product-detail-toggle-fit-{{ section.id }}"
+                      >
+                        <span>FIT</span>
+                        <span class="bg-product__detail-icon" aria-hidden="true">+</span>
+                      </label>
+                    </div>
+                  {% endif %}
+                </div>
+              {% endif %}
+
+              <div class="bg-product__actions">
+                <button
+                  class="bg-product__add-to-bag"
+                  type="submit"
+                  data-add-to-cart
+                  {% unless current_variant.available %}disabled{% endunless %}
+                >
+                  {% if current_variant.available %}
+                    ADD TO BAG
+                  {% else %}
+                    SOLD OUT
+                  {% endif %}
+                </button>
+              </div>
+            </div>
+
+            <div class="bg-product__info-right">
+              <div class="bg-product__detail-display" data-product-detail-display>
+                {% if product.description != blank %}
+                  <div
+                    id="bg-product-detail-description-{{ section.id }}"
+                    class="bg-product__detail-source"
+                    data-product-detail-panel
+                  >
+                    <div class="bg-product__detail-content rte">
+                      {{ product.description }}
+                    </div>
+                  </div>
+                {% endif %}
+
+                {% if care_instructions != blank %}
+                  <div
+                    id="bg-product-detail-care-{{ section.id }}"
+                    class="bg-product__detail-source"
+                    data-product-detail-panel
+                  >
+                    <div class="bg-product__detail-content rte">
+                      {{ care_instructions | metafield_tag }}
+                    </div>
+                  </div>
+                {% endif %}
+
+                {% if fit_details != blank %}
+                  <div
+                    id="bg-product-detail-fit-{{ section.id }}"
+                    class="bg-product__detail-source"
+                    data-product-detail-panel
+                  >
+                    <div class="bg-product__detail-content rte">
+                      {{ fit_details | metafield_tag }}
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+
+              <div class="bg-product__complete-look-shell" data-product-complete-look></div>
+            </div>
           </div>
         {% endform %}
       </div>
@@ -250,7 +381,9 @@
   .bg-product__title,
   .bg-product__price,
   .bg-product__option-label,
-  .bg-product__description,
+  .bg-product__archetype-label,
+  .bg-product__archetype-value,
+  .bg-product__detail-trigger,
   .bg-product__add-to-bag,
   .bg-product__option-value {
     letter-spacing: 0.08em;
@@ -260,6 +393,9 @@
   .bg-product__title,
   .bg-product__price,
   .bg-product__option-label,
+  .bg-product__archetype-label,
+  .bg-product__archetype-value,
+  .bg-product__detail-trigger,
   .bg-product__add-to-bag,
   .bg-product__option-value {
     font-size: clamp(1rem, 1.05vw, 1.15rem);
@@ -272,7 +408,32 @@
   }
 
   .bg-product__form {
+    display: block;
+  }
+
+  .bg-product__info-grid {
     display: grid;
+    grid-template-columns: minmax(16rem, 22rem) minmax(16rem, 1fr);
+    gap: clamp(2rem, 4vw, 4.5rem);
+    align-items: start;
+  }
+
+  .bg-product__detail-toggle {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .bg-product__info-left {
+    display: grid;
+    gap: clamp(1.75rem, 3vw, 2.5rem);
+    align-content: start;
+  }
+
+  .bg-product__info-right {
+    min-width: 0;
+    display: grid;
+    grid-template-rows: minmax(10rem, auto) minmax(10rem, 1fr);
     gap: clamp(1.75rem, 3vw, 2.5rem);
   }
 
@@ -322,6 +483,108 @@
     color: var(--gold);
   }
 
+  .bg-product__archetype {
+    display: grid;
+    gap: 0.45rem;
+    max-width: 30ch;
+  }
+
+  .bg-product__archetype-label,
+  .bg-product__archetype-value {
+    margin: 0;
+  }
+
+  .bg-product__detail-display,
+  .bg-product__complete-look-shell {
+    min-height: 100%;
+  }
+
+  .bg-product__detail-display {
+    display: grid;
+    align-content: start;
+    width: 100%;
+  }
+
+  .bg-product__details {
+    display: grid;
+    gap: 0;
+    max-width: min(100%, 20rem);
+    border-block: 1px solid color-mix(in srgb, var(--gold) 18%, transparent);
+  }
+
+  .bg-product__detail-item + .bg-product__detail-item {
+    border-top: 1px solid color-mix(in srgb, var(--gold) 18%, transparent);
+  }
+
+  .bg-product__detail-trigger {
+    width: 100%;
+    padding: 0.95rem 0;
+    border: 0;
+    background: transparent;
+    color: var(--gold);
+    font: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .bg-product__detail-trigger:hover,
+  .bg-product__detail-trigger:focus-visible {
+    color: var(--white-soft);
+  }
+
+  .bg-product__detail-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1rem;
+    transition: transform 180ms ease;
+  }
+
+  .bg-product__detail-toggle:checked ~ .bg-product__info-left label[for='bg-product-detail-toggle-description-{{ section.id }}'] .bg-product__detail-icon,
+  .bg-product__detail-toggle:checked ~ .bg-product__info-left label[for='bg-product-detail-toggle-care-{{ section.id }}'] .bg-product__detail-icon,
+  .bg-product__detail-toggle:checked ~ .bg-product__info-left label[for='bg-product-detail-toggle-fit-{{ section.id }}'] .bg-product__detail-icon {
+    transform: rotate(45deg);
+  }
+
+  .bg-product__detail-source {
+    display: none;
+    padding: 0;
+    width: 100%;
+  }
+
+  .bg-product__detail-content {
+    width: 100%;
+    max-width: none;
+    font-size: clamp(0.96rem, 0.98vw, 1.06rem);
+    line-height: 1.45;
+    text-transform: none;
+  }
+
+  #bg-product-detail-toggle-description-{{ section.id }}:checked ~ .bg-product__info-left label[for='bg-product-detail-toggle-description-{{ section.id }}'],
+  #bg-product-detail-toggle-care-{{ section.id }}:checked ~ .bg-product__info-left label[for='bg-product-detail-toggle-care-{{ section.id }}'],
+  #bg-product-detail-toggle-fit-{{ section.id }}:checked ~ .bg-product__info-left label[for='bg-product-detail-toggle-fit-{{ section.id }}'] {
+    color: var(--white-soft);
+  }
+
+  #bg-product-detail-toggle-description-{{ section.id }}:checked ~ .bg-product__info-left label[for='bg-product-detail-toggle-description-{{ section.id }}'] .bg-product__detail-icon,
+  #bg-product-detail-toggle-care-{{ section.id }}:checked ~ .bg-product__info-left label[for='bg-product-detail-toggle-care-{{ section.id }}'] .bg-product__detail-icon,
+  #bg-product-detail-toggle-fit-{{ section.id }}:checked ~ .bg-product__info-left label[for='bg-product-detail-toggle-fit-{{ section.id }}'] .bg-product__detail-icon {
+    transform: rotate(45deg);
+  }
+
+  #bg-product-detail-toggle-description-{{ section.id }}:checked ~ .bg-product__info-right #bg-product-detail-description-{{ section.id }},
+  #bg-product-detail-toggle-care-{{ section.id }}:checked ~ .bg-product__info-right #bg-product-detail-care-{{ section.id }},
+  #bg-product-detail-toggle-fit-{{ section.id }}:checked ~ .bg-product__info-right #bg-product-detail-fit-{{ section.id }} {
+    display: block;
+  }
+
+  .bg-product__complete-look-shell {
+    min-height: clamp(10rem, 22vw, 16rem);
+  }
+
   .bg-product__option-values::after {
     content: '\2304';
     position: absolute;
@@ -333,18 +596,13 @@
     pointer-events: none;
   }
 
-  .bg-product__description {
-    max-width: 30ch;
-    font-size: clamp(0.96rem, 0.98vw, 1.06rem);
-    line-height: 1.45;
-    text-transform: none;
-  }
-
-  .bg-product__description > :first-child {
+  .bg-product__detail-content > :first-child,
+  .bg-product__detail-content .metafield-rich_text_field > :first-child {
     margin-top: 0;
   }
 
-  .bg-product__description > :last-child {
+  .bg-product__detail-content > :last-child,
+  .bg-product__detail-content .metafield-rich_text_field > :last-child {
     margin-bottom: 0;
   }
 
@@ -388,6 +646,15 @@
       padding-top: 0;
       margin-inline-start: 0;
     }
+
+    .bg-product__info-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .bg-product__info-right {
+      grid-template-rows: auto;
+    }
   }
 
   @media screen and (max-width: 749px) {
@@ -403,7 +670,8 @@
       min-height: auto;
     }
 
-    .bg-product__description {
+    .bg-product__detail-content,
+    .bg-product__details {
       max-width: none;
     }
   }

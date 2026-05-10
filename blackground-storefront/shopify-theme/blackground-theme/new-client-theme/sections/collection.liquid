@@ -6,11 +6,11 @@
 
   assign collection_filter = blank
   assign size_filter = blank
-  assign color_filter = blank
+  assign archetype_filter = blank
   assign gender_filter = blank
   assign collection_filter_label = 'COLLECTION'
   assign size_filter_label = 'SIZE'
-  assign color_filter_label = 'COLOR'
+  assign archetype_filter_label = 'ARCHETYPE'
   assign gender_filter_label = 'GENDER'
   assign sort_filter_label = 'ORDER BY:'
 
@@ -22,8 +22,8 @@
         assign collection_filter = filter
       when 'size'
         assign size_filter = filter
-      when 'color', 'colour'
-        assign color_filter = filter
+      when 'archetype'
+        assign archetype_filter = filter
       when 'gender'
         assign gender_filter = filter
     endcase
@@ -57,10 +57,10 @@
             {% endfor %}
           {% endif %}
 
-          {% if color_filter != blank %}
-            {% for filter_value in color_filter.values %}
+          {% if archetype_filter != blank %}
+            {% for filter_value in archetype_filter.values %}
               {% if filter_value.active %}
-                {% assign color_filter_label = filter_value.label | upcase %}
+                {% assign archetype_filter_label = filter_value.label | upcase %}
                 {% break %}
               {% endif %}
             {% endfor %}
@@ -110,12 +110,12 @@
             </div>
           {% endif %}
 
-          {% if color_filter != blank %}
+          {% if archetype_filter != blank %}
             <div class="bg-collection__filter-menu">
-              <button class="bg-collection__filter-trigger" type="button" aria-expanded="false">{{ color_filter_label }}</button>
+              <button class="bg-collection__filter-trigger" type="button" aria-expanded="false">{{ archetype_filter_label }}</button>
               <div class="bg-collection__filter-dropdown" role="menu">
-                <a class="bg-collection__filter-option" href="{{ color_filter.url_to_remove | default: collection.url }}" role="menuitem">ANY</a>
-                {% for filter_value in color_filter.values %}
+                <a class="bg-collection__filter-option" href="{{ archetype_filter.url_to_remove | default: collection.url }}" role="menuitem">ANY</a>
+                {% for filter_value in archetype_filter.values %}
                   {% if filter_value.count > 0 or filter_value.active %}
                     <a class="bg-collection__filter-option{% if filter_value.active %} is-active{% endif %}" href="{% if filter_value.active %}{{ filter_value.url_to_remove }}{% else %}{{ filter_value.url_to_add }}{% endif %}" role="menuitem">{{ filter_value.label | upcase }}</a>
                   {% endif %}
