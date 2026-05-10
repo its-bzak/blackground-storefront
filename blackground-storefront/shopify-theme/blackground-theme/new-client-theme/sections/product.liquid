@@ -6,6 +6,7 @@
   assign care_instructions = product.metafields.custom.care_instructions
   assign fit_details = product.metafields.custom.fit
   assign default_detail_key = ''
+
   if media_count > 1
     assign has_media_stack = true
   endif
@@ -64,6 +65,7 @@
                     assign layer_state = 'back'
                   endif
                 %}
+
                 <div
                   class="bg-product__media-card{% if forloop.first %} is-active{% endif %}"
                   data-product-card
@@ -83,7 +85,12 @@
                 </div>
               {% endfor %}
             {% else %}
-              <div class="bg-product__media-card bg-product__media-card--placeholder is-active" data-product-card data-depth="1" data-layer-state="front">
+              <div
+                class="bg-product__media-card bg-product__media-card--placeholder is-active"
+                data-product-card
+                data-depth="1"
+                data-layer-state="front"
+              >
                 <div class="bg-product__media-placeholder" aria-hidden="true"></div>
               </div>
             {% endif %}
@@ -114,18 +121,32 @@
                       assign display_label = 'SIZE'
                     endif
                   %}
-                  <fieldset class="bg-product__option-group" data-option-group data-option-position="{{ option.position }}" data-option-name="{{ option.name | escape }}">
+
+                  <fieldset
+                    class="bg-product__option-group"
+                    data-option-group
+                    data-option-position="{{ option.position }}"
+                    data-option-name="{{ option.name | escape }}"
+                  >
                     <legend class="bg-product__option-label">{{ display_label }}</legend>
+
                     <div class="bg-product__option-values">
                       <select
-                        id="bg-product-option-{{section.id}}-{{ option.position }}"
+                        id="bg-product-option-{{ section.id }}-{{ option.position }}"
                         class="bg-product__option-select"
                         data-option-select
                         data-option-position="{{ option.position }}"
                         data-option-name="{{ option.name | escape }}"
                       >
+                        {% if normalized_name == 'size' %}
+                          <option value="" selected>SELECT</option>
+                        {% endif %}
+
                         {% for value in option.values %}
-                          <option value="{{ value | escape }}"{% if option.selected_value == value %} selected{% endif %}>
+                          <option
+                            value="{{ value | escape }}"
+                            {% if normalized_name != 'size' and option.selected_value == value %}selected{% endif %}
+                          >
                             {{ value | upcase }}
                           </option>
                         {% endfor %}
@@ -155,6 +176,7 @@
                         data-product-detail-trigger
                         {% if default_detail_key == 'description' %}checked{% endif %}
                       >
+
                       <label class="bg-product__detail-trigger" for="product-detail-description-{{ section.id }}">
                         <span>DESCRIPTION</span>
                         <span class="bg-product__detail-icon" aria-hidden="true">+</span>
@@ -173,6 +195,7 @@
                         data-product-detail-trigger
                         {% if default_detail_key == 'fit' %}checked{% endif %}
                       >
+
                       <label class="bg-product__detail-trigger" for="product-detail-fit-{{ section.id }}">
                         <span>FIT</span>
                         <span class="bg-product__detail-icon" aria-hidden="true">+</span>
@@ -191,6 +214,7 @@
                         data-product-detail-trigger
                         {% if default_detail_key == 'care' %}checked{% endif %}
                       >
+
                       <label class="bg-product__detail-trigger" for="product-detail-care-{{ section.id }}">
                         <span>CARE INSTRUCTIONS</span>
                         <span class="bg-product__detail-icon" aria-hidden="true">+</span>
@@ -230,18 +254,6 @@
                   </div>
                 {% endif %}
 
-                {% if care_instructions != blank %}
-                  <div
-                    id="bg-product-detail-care-{{ section.id }}"
-                    class="bg-product__detail-source{% if default_detail_key == 'care' %} is-active{% endif %}"
-                    data-product-detail-panel="care"
-                  >
-                    <div class="bg-product__detail-content rte">
-                      {{ care_instructions | metafield_tag }}
-                    </div>
-                  </div>
-                {% endif %}
-
                 {% if fit_details != blank %}
                   <div
                     id="bg-product-detail-fit-{{ section.id }}"
@@ -250,6 +262,18 @@
                   >
                     <div class="bg-product__detail-content rte">
                       {{ fit_details | metafield_tag }}
+                    </div>
+                  </div>
+                {% endif %}
+
+                {% if care_instructions != blank %}
+                  <div
+                    id="bg-product-detail-care-{{ section.id }}"
+                    class="bg-product__detail-source{% if default_detail_key == 'care' %} is-active{% endif %}"
+                    data-product-detail-panel="care"
+                  >
+                    <div class="bg-product__detail-content rte">
+                      {{ care_instructions | metafield_tag }}
                     </div>
                   </div>
                 {% endif %}
@@ -481,6 +505,17 @@
     color: var(--gold);
   }
 
+  .bg-product__option-values::after {
+    content: '\2304';
+    position: absolute;
+    inset-inline-end: 0;
+    inset-block-start: 50%;
+    transform: translateY(-52%);
+    font-size: 0.8em;
+    line-height: 1;
+    pointer-events: none;
+  }
+
   .bg-product__archetype {
     display: grid;
     gap: 0.45rem;
@@ -572,31 +607,16 @@
     min-height: 100%;
   }
 
+  .bg-product__detail-source.is-active {
+    display: block;
+  }
+
   .bg-product__detail-content {
     width: 100%;
     max-width: none;
     font-size: clamp(0.96rem, 0.98vw, 1.06rem);
     line-height: 1.45;
     text-transform: none;
-  }
-
-  .bg-product__detail-source.is-active {
-    display: block;
-  }
-
-  .bg-product__complete-look-shell {
-    min-height: 0;
-  }
-
-  .bg-product__option-values::after {
-    content: '\2304';
-    position: absolute;
-    inset-inline-end: 0;
-    inset-block-start: 50%;
-    transform: translateY(-52%);
-    font-size: 0.8em;
-    line-height: 1;
-    pointer-events: none;
   }
 
   .bg-product__detail-content > :first-child,
@@ -607,6 +627,10 @@
   .bg-product__detail-content > :last-child,
   .bg-product__detail-content .metafield-rich_text_field > :last-child {
     margin-bottom: 0;
+  }
+
+  .bg-product__complete-look-shell {
+    min-height: 0;
   }
 
   .bg-product__actions {
@@ -692,7 +716,7 @@
   }
 {% endstylesheet %}
 
-{% javascript %}
+<script>
   (() => {
     const section = document.querySelector('[data-section-id="{{ section.id }}"]');
 
@@ -710,6 +734,7 @@
     const detailPanels = Array.from(section.querySelectorAll('[data-product-detail-panel]'));
     const mediaStack = section.querySelector('[data-product-media-stack]');
     const mediaCards = Array.from(section.querySelectorAll('[data-product-card]'));
+
     const formatter = new Intl.NumberFormat(undefined, {
       style: 'currency',
       currency: '{{ cart.currency.iso_code }}'
@@ -727,12 +752,14 @@
       }
     });
 
-    const findMatchingVariant = () => variants.find((variant) => {
-      return Object.keys(selectedOptions).every((key) => {
-        const optionIndex = Number(key) - 1;
-        return variant.options?.[optionIndex] === selectedOptions[key];
+    const findMatchingVariant = () => {
+      return variants.find((variant) => {
+        return Object.keys(selectedOptions).every((key) => {
+          const optionIndex = Number(key) - 1;
+          return variant.options?.[optionIndex] === selectedOptions[key];
+        });
       });
-    });
+    };
 
     const getVariantImageId = (variant) => {
       if (!variant) {
@@ -771,7 +798,10 @@
         return;
       }
 
-      const matchIndex = mediaCards.findIndex((card) => String(card.dataset.imageId) === String(imageId));
+      const matchIndex = mediaCards.findIndex((card) => {
+        return String(card.dataset.imageId) === String(imageId);
+      });
+
       applyActiveMedia(matchIndex >= 0 ? matchIndex : 0);
     };
 
@@ -791,6 +821,7 @@
       priceNode.textContent = formatter.format((variant.price || 0) / 100);
       addToCartButton.disabled = !variant.available;
       addToCartButton.textContent = variant.available ? 'ADD TO BAG' : 'SOLD OUT';
+
       setActiveMediaByImageId(getVariantImageId(variant));
     };
 
@@ -798,25 +829,25 @@
       select.addEventListener('change', () => {
         const position = Number(select.dataset.optionPosition);
         selectedOptions[position] = select.value;
+
         applyVariant(findMatchingVariant());
       });
     });
 
     const setActiveDetailPanel = (detailKey) => {
-      if (!detailKey) {
-        return;
-      }
-
       detailPanels.forEach((panel) => {
-        panel.classList.toggle('is-active', panel.dataset.productDetailPanel === detailKey);
+        const isActivePanel = panel.dataset.productDetailPanel === detailKey;
+        panel.classList.toggle('is-active', isActivePanel);
       });
     };
 
     detailTriggers.forEach((trigger) => {
       trigger.addEventListener('change', () => {
-        if (trigger.checked) {
-          setActiveDetailPanel(trigger.value);
+        if (!trigger.checked) {
+          return;
         }
+
+        setActiveDetailPanel(trigger.value);
       });
     });
 
@@ -833,20 +864,26 @@
         }
 
         isMediaTransitionLocked = true;
+
         applyActiveMedia(activeMediaIndex + 1);
 
         window.setTimeout(() => {
           mediaCards.forEach((card) => {
             card.classList.remove('is-previous');
           });
+
           isMediaTransitionLocked = false;
         }, 320);
       });
     }
 
-    applyVariant(findMatchingVariant() || variants.find((variant) => String(variant.id) === variantInput?.value));
+    const initialVariant =
+      findMatchingVariant() ||
+      variants.find((variant) => String(variant.id) === String(variantInput?.value));
+
+    applyVariant(initialVariant);
   })();
-{% endjavascript %}
+</script>
 
 {% schema %}
 {
