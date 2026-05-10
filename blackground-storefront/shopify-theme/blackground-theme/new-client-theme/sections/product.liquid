@@ -12,10 +12,10 @@
 
   if product.description != blank
     assign default_detail_key = 'description'
-  elsif care_instructions != blank
-    assign default_detail_key = 'care'
   elsif fit_details != blank
     assign default_detail_key = 'fit'
+  elsif care_instructions != blank
+    assign default_detail_key = 'care'
   endif
 
   assign style_label = 'STYLE'
@@ -96,36 +96,6 @@
           <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
 
           <div class="bg-product__info-grid">
-            {% if product.description != blank %}
-              <input
-                id="bg-product-detail-toggle-description-{{ section.id }}"
-                class="bg-product__detail-toggle"
-                type="radio"
-                name="bg-product-detail-toggle-{{ section.id }}"
-                {% if default_detail_key == 'description' %}checked{% endif %}
-              >
-            {% endif %}
-
-            {% if care_instructions != blank %}
-              <input
-                id="bg-product-detail-toggle-care-{{ section.id }}"
-                class="bg-product__detail-toggle"
-                type="radio"
-                name="bg-product-detail-toggle-{{ section.id }}"
-                {% if default_detail_key == 'care' %}checked{% endif %}
-              >
-            {% endif %}
-
-            {% if fit_details != blank %}
-              <input
-                id="bg-product-detail-toggle-fit-{{ section.id }}"
-                class="bg-product__detail-toggle"
-                type="radio"
-                name="bg-product-detail-toggle-{{ section.id }}"
-                {% if default_detail_key == 'fit' %}checked{% endif %}
-              >
-            {% endif %}
-
             <div class="bg-product__info-left">
               <div class="bg-product__header-block">
                 <h1 class="bg-product__title">{{ product.title }}</h1>
@@ -167,7 +137,7 @@
 
               {% if archetype != blank %}
                 <div class="bg-product__archetype">
-                  <p class="bg-product__archetype-label">ARCHETYPE</p>
+                  <p class="bg-product__archetype-label">ARCHETYPE:</p>
                   <p class="bg-product__archetype-value">{{ archetype }}</p>
                 </div>
               {% endif %}
@@ -176,23 +146,17 @@
                 <div class="bg-product__details" data-product-details>
                   {% if product.description != blank %}
                     <div class="bg-product__detail-item" data-product-detail-item>
-                      <label
-                        class="bg-product__detail-trigger"
-                        for="bg-product-detail-toggle-description-{{ section.id }}"
+                      <input
+                        id="product-detail-description-{{ section.id }}"
+                        class="bg-product__detail-radio"
+                        type="radio"
+                        name="product-detail-{{ section.id }}"
+                        value="description"
+                        data-product-detail-trigger
+                        {% if default_detail_key == 'description' %}checked{% endif %}
                       >
+                      <label class="bg-product__detail-trigger" for="product-detail-description-{{ section.id }}">
                         <span>DESCRIPTION</span>
-                        <span class="bg-product__detail-icon" aria-hidden="true">+</span>
-                      </label>
-                    </div>
-                  {% endif %}
-
-                  {% if care_instructions != blank %}
-                    <div class="bg-product__detail-item" data-product-detail-item>
-                      <label
-                        class="bg-product__detail-trigger"
-                        for="bg-product-detail-toggle-care-{{ section.id }}"
-                      >
-                        <span>CARE INSTRUCTIONS</span>
                         <span class="bg-product__detail-icon" aria-hidden="true">+</span>
                       </label>
                     </div>
@@ -200,11 +164,35 @@
 
                   {% if fit_details != blank %}
                     <div class="bg-product__detail-item" data-product-detail-item>
-                      <label
-                        class="bg-product__detail-trigger"
-                        for="bg-product-detail-toggle-fit-{{ section.id }}"
+                      <input
+                        id="product-detail-fit-{{ section.id }}"
+                        class="bg-product__detail-radio"
+                        type="radio"
+                        name="product-detail-{{ section.id }}"
+                        value="fit"
+                        data-product-detail-trigger
+                        {% if default_detail_key == 'fit' %}checked{% endif %}
                       >
+                      <label class="bg-product__detail-trigger" for="product-detail-fit-{{ section.id }}">
                         <span>FIT</span>
+                        <span class="bg-product__detail-icon" aria-hidden="true">+</span>
+                      </label>
+                    </div>
+                  {% endif %}
+
+                  {% if care_instructions != blank %}
+                    <div class="bg-product__detail-item" data-product-detail-item>
+                      <input
+                        id="product-detail-care-{{ section.id }}"
+                        class="bg-product__detail-radio"
+                        type="radio"
+                        name="product-detail-{{ section.id }}"
+                        value="care"
+                        data-product-detail-trigger
+                        {% if default_detail_key == 'care' %}checked{% endif %}
+                      >
+                      <label class="bg-product__detail-trigger" for="product-detail-care-{{ section.id }}">
+                        <span>CARE INSTRUCTIONS</span>
                         <span class="bg-product__detail-icon" aria-hidden="true">+</span>
                       </label>
                     </div>
@@ -233,8 +221,8 @@
                 {% if product.description != blank %}
                   <div
                     id="bg-product-detail-description-{{ section.id }}"
-                    class="bg-product__detail-source"
-                    data-product-detail-panel
+                    class="bg-product__detail-source{% if default_detail_key == 'description' %} is-active{% endif %}"
+                    data-product-detail-panel="description"
                   >
                     <div class="bg-product__detail-content rte">
                       {{ product.description }}
@@ -245,8 +233,8 @@
                 {% if care_instructions != blank %}
                   <div
                     id="bg-product-detail-care-{{ section.id }}"
-                    class="bg-product__detail-source"
-                    data-product-detail-panel
+                    class="bg-product__detail-source{% if default_detail_key == 'care' %} is-active{% endif %}"
+                    data-product-detail-panel="care"
                   >
                     <div class="bg-product__detail-content rte">
                       {{ care_instructions | metafield_tag }}
@@ -257,8 +245,8 @@
                 {% if fit_details != blank %}
                   <div
                     id="bg-product-detail-fit-{{ section.id }}"
-                    class="bg-product__detail-source"
-                    data-product-detail-panel
+                    class="bg-product__detail-source{% if default_detail_key == 'fit' %} is-active{% endif %}"
+                    data-product-detail-panel="fit"
                   >
                     <div class="bg-product__detail-content rte">
                       {{ fit_details | metafield_tag }}
@@ -281,6 +269,9 @@
     padding-block: clamp(1.75rem, 4vw, 3rem) clamp(3rem, 7vw, 5.5rem);
     padding-inline: clamp(1rem, 3vw, 2.5rem);
     color: var(--gold);
+    box-sizing: border-box;
+    block-size: calc(100dvh - var(--header-height, 0px) - clamp(7.5rem, 12vh, 10rem));
+    overflow: hidden;
   }
 
   .bg-product__inner {
@@ -289,6 +280,7 @@
       calc(100% - var(--page-margin) * 2)
     );
     margin-inline: auto;
+    block-size: 100%;
   }
 
   .bg-product__layout {
@@ -296,17 +288,21 @@
     grid-template-columns: minmax(18rem, 0.92fr) minmax(22rem, 1.08fr);
     column-gap: 0;
     row-gap: clamp(1.4rem, 2.75vw, 2rem);
-    align-items: start;
+    align-items: stretch;
+    block-size: 100%;
+    min-height: 0;
   }
 
   .bg-product__media-column {
     min-width: 0;
+    min-height: 0;
   }
 
   .bg-product__media-shell {
     position: sticky;
     top: calc(var(--header-height, 0px) + 1.5rem);
     width: min(100%, 34rem);
+    block-size: 100%;
   }
 
   .bg-product__media-shell--stacked {
@@ -315,8 +311,9 @@
 
   .bg-product__media-frame {
     position: relative;
-    aspect-ratio: 0.77;
-    min-height: min(70vh, 48rem);
+    aspect-ratio: auto;
+    block-size: 100%;
+    min-height: 0;
     border-radius: clamp(2rem, 2.5vw, 2.8rem);
     overflow: hidden;
   }
@@ -366,6 +363,7 @@
 
   .bg-product__info-column {
     min-width: 0;
+    min-height: 0;
     padding-top: clamp(0.2rem, 0.6vw, 0.6rem);
     margin-inline-start: calc(clamp(2rem, 2.5vw, 2.8rem) * -1);
     position: relative;
@@ -409,32 +407,32 @@
 
   .bg-product__form {
     display: block;
+    block-size: 100%;
   }
 
   .bg-product__info-grid {
     display: grid;
     grid-template-columns: minmax(16rem, 22rem) minmax(16rem, 1fr);
     gap: clamp(2rem, 4vw, 4.5rem);
-    align-items: start;
-  }
-
-  .bg-product__detail-toggle {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
+    align-items: stretch;
+    block-size: 100%;
+    min-height: 0;
   }
 
   .bg-product__info-left {
     display: grid;
     gap: clamp(1.75rem, 3vw, 2.5rem);
     align-content: start;
+    min-height: 0;
+    overflow: hidden;
   }
 
   .bg-product__info-right {
     min-width: 0;
     display: grid;
-    grid-template-rows: minmax(10rem, auto) minmax(10rem, 1fr);
+    grid-template-rows: repeat(2, minmax(0, 1fr));
     gap: clamp(1.75rem, 3vw, 2.5rem);
+    min-height: 100%;
   }
 
   .bg-product__meta-groups {
@@ -496,13 +494,23 @@
 
   .bg-product__detail-display,
   .bg-product__complete-look-shell {
-    min-height: 100%;
+    min-height: 0;
   }
 
   .bg-product__detail-display {
     display: grid;
     align-content: start;
     width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .bg-product__detail-display::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
   }
 
   .bg-product__details {
@@ -514,6 +522,12 @@
 
   .bg-product__detail-item + .bg-product__detail-item {
     border-top: 1px solid color-mix(in srgb, var(--gold) 18%, transparent);
+  }
+
+  .bg-product__detail-radio {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
   }
 
   .bg-product__detail-trigger {
@@ -530,6 +544,10 @@
     cursor: pointer;
   }
 
+  .bg-product__detail-radio:checked + .bg-product__detail-trigger {
+    color: var(--white-soft);
+  }
+
   .bg-product__detail-trigger:hover,
   .bg-product__detail-trigger:focus-visible {
     color: var(--white-soft);
@@ -543,9 +561,7 @@
     transition: transform 180ms ease;
   }
 
-  .bg-product__detail-toggle:checked ~ .bg-product__info-left label[for='bg-product-detail-toggle-description-{{ section.id }}'] .bg-product__detail-icon,
-  .bg-product__detail-toggle:checked ~ .bg-product__info-left label[for='bg-product-detail-toggle-care-{{ section.id }}'] .bg-product__detail-icon,
-  .bg-product__detail-toggle:checked ~ .bg-product__info-left label[for='bg-product-detail-toggle-fit-{{ section.id }}'] .bg-product__detail-icon {
+  .bg-product__detail-radio:checked + .bg-product__detail-trigger .bg-product__detail-icon {
     transform: rotate(45deg);
   }
 
@@ -553,6 +569,7 @@
     display: none;
     padding: 0;
     width: 100%;
+    min-height: 100%;
   }
 
   .bg-product__detail-content {
@@ -563,26 +580,12 @@
     text-transform: none;
   }
 
-  #bg-product-detail-toggle-description-{{ section.id }}:checked ~ .bg-product__info-left label[for='bg-product-detail-toggle-description-{{ section.id }}'],
-  #bg-product-detail-toggle-care-{{ section.id }}:checked ~ .bg-product__info-left label[for='bg-product-detail-toggle-care-{{ section.id }}'],
-  #bg-product-detail-toggle-fit-{{ section.id }}:checked ~ .bg-product__info-left label[for='bg-product-detail-toggle-fit-{{ section.id }}'] {
-    color: var(--white-soft);
-  }
-
-  #bg-product-detail-toggle-description-{{ section.id }}:checked ~ .bg-product__info-left label[for='bg-product-detail-toggle-description-{{ section.id }}'] .bg-product__detail-icon,
-  #bg-product-detail-toggle-care-{{ section.id }}:checked ~ .bg-product__info-left label[for='bg-product-detail-toggle-care-{{ section.id }}'] .bg-product__detail-icon,
-  #bg-product-detail-toggle-fit-{{ section.id }}:checked ~ .bg-product__info-left label[for='bg-product-detail-toggle-fit-{{ section.id }}'] .bg-product__detail-icon {
-    transform: rotate(45deg);
-  }
-
-  #bg-product-detail-toggle-description-{{ section.id }}:checked ~ .bg-product__info-right #bg-product-detail-description-{{ section.id }},
-  #bg-product-detail-toggle-care-{{ section.id }}:checked ~ .bg-product__info-right #bg-product-detail-care-{{ section.id }},
-  #bg-product-detail-toggle-fit-{{ section.id }}:checked ~ .bg-product__info-right #bg-product-detail-fit-{{ section.id }} {
+  .bg-product__detail-source.is-active {
     display: block;
   }
 
   .bg-product__complete-look-shell {
-    min-height: clamp(10rem, 22vw, 16rem);
+    min-height: 0;
   }
 
   .bg-product__option-values::after {
@@ -634,12 +637,14 @@
   @media screen and (max-width: 1099px) {
     .bg-product__layout {
       grid-template-columns: 1fr;
+      block-size: auto;
     }
 
     .bg-product__media-shell {
       position: relative;
       top: auto;
       width: min(100%, 30rem);
+      block-size: auto;
     }
 
     .bg-product__info-column {
@@ -650,16 +655,24 @@
     .bg-product__info-grid {
       grid-template-columns: 1fr;
       gap: 2rem;
+      block-size: auto;
     }
 
     .bg-product__info-right {
       grid-template-rows: auto;
+      min-height: auto;
+    }
+
+    .bg-product__detail-display {
+      overflow-y: visible;
     }
   }
 
   @media screen and (max-width: 749px) {
     .bg-product {
       padding-block-start: 1.25rem;
+      block-size: auto;
+      overflow: visible;
     }
 
     .bg-product__media-shell {
@@ -667,7 +680,9 @@
     }
 
     .bg-product__media-frame {
+      block-size: auto;
       min-height: auto;
+      aspect-ratio: 0.77;
     }
 
     .bg-product__detail-content,
@@ -691,6 +706,8 @@
     const addToCartButton = section.querySelector('[data-add-to-cart]');
     const optionSelects = Array.from(section.querySelectorAll('[data-option-select]'));
     const optionGroups = Array.from(section.querySelectorAll('[data-option-group]'));
+    const detailTriggers = Array.from(section.querySelectorAll('[data-product-detail-trigger]'));
+    const detailPanels = Array.from(section.querySelectorAll('[data-product-detail-panel]'));
     const mediaStack = section.querySelector('[data-product-media-stack]');
     const mediaCards = Array.from(section.querySelectorAll('[data-product-card]'));
     const formatter = new Intl.NumberFormat(undefined, {
@@ -784,6 +801,30 @@
         applyVariant(findMatchingVariant());
       });
     });
+
+    const setActiveDetailPanel = (detailKey) => {
+      if (!detailKey) {
+        return;
+      }
+
+      detailPanels.forEach((panel) => {
+        panel.classList.toggle('is-active', panel.dataset.productDetailPanel === detailKey);
+      });
+    };
+
+    detailTriggers.forEach((trigger) => {
+      trigger.addEventListener('change', () => {
+        if (trigger.checked) {
+          setActiveDetailPanel(trigger.value);
+        }
+      });
+    });
+
+    const activeTrigger = detailTriggers.find((trigger) => trigger.checked);
+
+    if (activeTrigger) {
+      setActiveDetailPanel(activeTrigger.value);
+    }
 
     if (mediaStack && mediaCards.length > 1) {
       mediaStack.addEventListener('click', () => {
