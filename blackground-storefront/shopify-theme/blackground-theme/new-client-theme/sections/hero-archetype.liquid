@@ -29,7 +29,7 @@
     {% if section.settings.cta_label != blank %}
       <a
         class="hero-archetype__cta bg-mono"
-        href="{{ section.settings.cta_link | default: '#' }}"
+        href="{{ section.settings.cta_link | default: '/pages/blackground-quiz' }}"
       >
         {{ section.settings.cta_label }}
       </a>
@@ -360,7 +360,7 @@
       "type": "text",
       "id": "cta_label",
       "label": "CTA label",
-      "default": "FIND YOUR ARCHETYPE"
+      "default": "Find Your Archetype"
     },
     {
       "type": "url",

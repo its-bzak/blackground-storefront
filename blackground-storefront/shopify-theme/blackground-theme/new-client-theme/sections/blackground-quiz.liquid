@@ -1,0 +1,71 @@
+{{ 'blackground-quiz.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'blackground-quiz.js' | asset_url }}" defer></script>
+
+<section
+  class="bg-quiz-page full-width"
+  data-blackground-quiz
+  data-quiz-version="blackground-check-v1"
+  data-result-url="{{ section.settings.result_page_url | default: '/pages/blackground-result' }}"
+>
+  <div class="bg-quiz-page__inner">
+    <div class="bg-quiz-page__header">
+      <p class="bg-quiz-page__eyebrow bg-mono">Find Your Archetype</p>
+      <h1 class="bg-quiz-page__title bg-serif">The Blackground Check</h1>
+      <p class="bg-quiz-page__subtitle bg-mono">Eight questions. Sixty seconds. Find your Blackground.</p>
+    </div>
+
+    <div class="bg-quiz-page__app" data-blackground-quiz-app></div>
+
+    <noscript>
+      <p class="bg-quiz-page__noscript bg-mono">This quiz requires JavaScript to calculate and display your result.</p>
+    </noscript>
+  </div>
+
+  <script type="application/json" data-blackground-quiz-config>
+    {
+      "q4Images": {
+        "A": {% if section.settings.q4_image_a != blank %}{{ section.settings.q4_image_a | image_url: width: 1400 | json }}{% else %}null{% endif %},
+        "B": {% if section.settings.q4_image_b != blank %}{{ section.settings.q4_image_b | image_url: width: 1400 | json }}{% else %}null{% endif %},
+        "C": {% if section.settings.q4_image_c != blank %}{{ section.settings.q4_image_c | image_url: width: 1400 | json }}{% else %}null{% endif %},
+        "D": {% if section.settings.q4_image_d != blank %}{{ section.settings.q4_image_d | image_url: width: 1400 | json }}{% else %}null{% endif %}
+      }
+    }
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Blackground quiz",
+  "settings": [
+    {
+      "type": "url",
+      "id": "result_page_url",
+      "label": "Result page URL"
+    },
+    {
+      "type": "header",
+      "content": "Q4 image cards"
+    },
+    {
+      "type": "image_picker",
+      "id": "q4_image_a",
+      "label": "Q4 option A image"
+    },
+    {
+      "type": "image_picker",
+      "id": "q4_image_b",
+      "label": "Q4 option B image"
+    },
+    {
+      "type": "image_picker",
+      "id": "q4_image_c",
+      "label": "Q4 option C image"
+    },
+    {
+      "type": "image_picker",
+      "id": "q4_image_d",
+      "label": "Q4 option D image"
+    }
+  ]
+}
+{% endschema %}
