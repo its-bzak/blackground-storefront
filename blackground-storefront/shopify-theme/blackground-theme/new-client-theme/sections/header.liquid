@@ -1,10 +1,21 @@
+{% liquid
+  assign is_product_grid_page = false
+  if request.page_type == 'collection' or request.page_type == 'list-collections'
+    assign is_product_grid_page = true
+  endif
+%}
+
 <header class="bg-header full-width" role="banner">
   <div class="bg-header__inner">
     <a
       class="bg-header__link bg-header__link--left bg-link"
-      href="{{ section.settings.left_link | default: routes.root_url }}"
+      href="{% if is_product_grid_page %}{{ routes.root_url }}{% else %}{{ section.settings.left_link | default: routes.root_url }}{% endif %}"
     >
-      {{ section.settings.left_label | default: 'MENU' }}
+      {% if is_product_grid_page %}
+        BACK
+      {% else %}
+        {{ section.settings.left_label | default: 'MENU' }}
+      {% endif %}
     </a>
 
     <a
@@ -20,12 +31,14 @@
       >
     </a>
 
-    <a
-      class="bg-header__link bg-header__link--right bg-link"
-      href="{{ section.settings.right_link | default: routes.account_register_url }}"
-    >
-      {{ section.settings.right_label | default: 'JOIN US' }}
-    </a>
+    {% unless is_product_grid_page %}
+      <a
+        class="bg-header__link bg-header__link--right bg-link"
+        href="{{ section.settings.right_link | default: routes.account_register_url }}"
+      >
+        {{ section.settings.right_label | default: 'JOIN US' }}
+      </a>
+    {% endunless %}
   </div>
 </header>
 
