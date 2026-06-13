@@ -1,5 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
+body.archetype-hero-page .shopify-section-header,
+body.archetype-hero-page header,
+body.archetype-hero-page .header-wrapper,
+body.archetype-hero-page .stick-header {
+  display: none !important;
+}
+
 html.archetype-hero-page,
 body.archetype-hero-page {
   width: 100%;
@@ -467,6 +474,155 @@ body.archetype-hero-page .shopify-section:has(.archetype-hero) {
 
 .archetype-hero .dot.on {
   transform: scale(1.55);
+}
+
+/* HERO NAV */
+.archetype-hero .archetype-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 300;
+  display: flex;
+  color: var(--gold);
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 32px;
+  padding-right: 32px;
+  pointer-events: none;
+  transition: color 0.7s;
+}
+
+.archetype-hero .archetype-nav--top {
+  top: 0;
+  height: 68px;
+}
+
+.archetype-hero .archetype-nav--bottom {
+  bottom: 0;
+  height: 52px;
+}
+
+.archetype-hero .archetype-nav > * {
+  pointer-events: auto;
+}
+
+.archetype-hero .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: opacity 0.2s;
+}
+
+.archetype-hero .nav-link:hover {
+  opacity: 1;
+}
+
+.archetype-hero .dd-wrap {
+  position: relative;
+}
+
+.archetype-hero .dd-chev {
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.archetype-hero .dd-wrap.open .dd-chev {
+  transform: rotate(-135deg);
+}
+
+.archetype-hero .dropdown {
+  position: absolute;
+  background: rgba(8, 8, 8, 0.97);
+  border: 1px solid rgba(212, 175, 0, 0.18);
+  min-width: 180px;
+  padding: 6px 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity 0.2s, transform 0.2s;
+  backdrop-filter: blur(14px);
+}
+
+.archetype-hero .dd-wrap.open .dropdown {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
+}
+
+.archetype-hero .dd-wrap.tl .dropdown,
+.archetype-hero .dd-wrap.bl .dropdown {
+  top: calc(100% + 10px);
+  left: 0;
+}
+
+.archetype-hero .dd-wrap.tr .dropdown {
+  top: calc(100% + 10px);
+  right: 0;
+}
+
+.archetype-hero .dd-wrap.bl .dropdown,
+.archetype-hero .dd-wrap.br .dropdown {
+  top: auto;
+  bottom: calc(100% + 10px);
+}
+
+.archetype-hero .dd-wrap.br .dropdown {
+  right: 0;
+}
+
+.archetype-hero .dd-item {
+  position: relative;
+}
+
+.archetype-hero .dd-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-width: 100%;
+  padding: 10px 18px;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.18s;
+  white-space: nowrap;
+}
+
+.archetype-hero .dd-row:hover,
+.archetype-hero .dd-item:hover > .dd-row {
+  opacity: 1;
+}
+
+.archetype-hero .dd-divider {
+  height: 1px;
+  background: rgba(212, 175, 0, 0.1);
+  margin: 5px 0;
 }
 
 /* MOBILE */

@@ -20,22 +20,30 @@
     const total = cards.length;
     const tab = 18;
 
-    const slides = [
-      { bg: '#f0ece0', dark: true },
-      { bg: '#c87145', dark: false },
-      { bg: '#0a0a0a', dark: false },
-      { bg: '#4a1015', dark: false },
-      { bg: '#f8f5ef', dark: true },
-      { bg: '#D4AF00', dark: true },
-      { bg: '#8b1520', dark: false },
-      { bg: '#1f6363', dark: false }
-    ];
-
     let current = 0;
     let busy = false;
     let wheelAccumulator = 0;
     let wheelTimer = null;
     let touchStartY = 0;
+
+    /*
+      Keep the page/hero background black for every card.
+      This replaces the old slide-based background color behavior.
+    */
+    hero.style.background = '#080808';
+    document.body.style.background = '#080808';
+
+    /*
+      Keep nav button color the same for every card.
+      Change this value if you want the nav to be white instead.
+    */
+    const fixedNavColor = 'var(--gold)';
+
+    const topNav = hero.querySelector('#archetype-top-nav');
+    const bottomNav = hero.querySelector('#archetype-bottom-nav');
+
+    if (topNav) topNav.style.color = fixedNavColor;
+    if (bottomNav) bottomNav.style.color = fixedNavColor;
 
     dotsEl.innerHTML = '';
 
@@ -44,9 +52,11 @@
       dot.type = 'button';
       dot.className = 'dot';
       dot.setAttribute('aria-label', `Go to archetype ${i + 1}`);
+
       dot.addEventListener('click', function () {
         goTo(i);
       });
+
       dotsEl.appendChild(dot);
     }
 
@@ -82,27 +92,26 @@
         card.style.opacity = String(opacity);
       });
 
-      const slide = slides[current] || slides[0];
-
-      hero.style.transition = 'background 0.7s ease';
-      hero.style.background = slide.bg;
-
+      /*
+        Keep dots the same color for every card too.
+      */
       dotEls.forEach(function (dot, index) {
         const isActive = index === current;
 
         dot.classList.toggle('on', isActive);
         dot.setAttribute('aria-current', isActive ? 'true' : 'false');
 
-        if (isActive) {
-          dot.style.background = slide.dark
-            ? 'rgba(20, 14, 0, 0.7)'
-            : 'var(--gold)';
-        } else {
-          dot.style.background = slide.dark
-            ? 'rgba(20, 14, 0, 0.25)'
-            : 'rgba(242, 240, 235, 0.25)';
-        }
+        dot.style.background = isActive
+          ? 'var(--gold)'
+          : 'rgba(242, 240, 235, 0.25)';
       });
+
+      /*
+        Re-apply fixed colors in case Shopify theme scripts/styles interfere.
+      */
+      hero.style.background = '#080808';
+      if (topNav) topNav.style.color = fixedNavColor;
+      if (bottomNav) bottomNav.style.color = fixedNavColor;
     }
 
     function goTo(index) {
@@ -153,6 +162,7 @@
 
     function onKeydown(event) {
       const activeElement = document.activeElement;
+
       const isTyping =
         activeElement &&
         (
@@ -193,6 +203,45 @@
         }
       }
     }
+
+    /*
+      Dropdown behavior for:
+      - Collections
+      - Log In
+      - About
+      - Join Us
+    */
+    const dropdownToggles = Array.from(hero.querySelectorAll('[data-dropdown-toggle]'));
+    const dropdowns = Array.from(hero.querySelectorAll('.dd-wrap'));
+
+    dropdownToggles.forEach(function (toggle) {
+      toggle.addEventListener('click', function (event) {
+        event.stopPropagation();
+
+        const id = toggle.getAttribute('data-dropdown-toggle');
+        const dropdown = hero.querySelector(`#${id}`);
+
+        if (!dropdown) return;
+
+        const wasOpen = dropdown.classList.contains('open');
+
+        dropdowns.forEach(function (item) {
+          item.classList.remove('open');
+        });
+
+        if (!wasOpen) {
+          dropdown.classList.add('open');
+        }
+      });
+    });
+
+    document.addEventListener('click', function (event) {
+      if (!event.target.closest('.dd-wrap')) {
+        dropdowns.forEach(function (item) {
+          item.classList.remove('open');
+        });
+      }
+    });
 
     hero.addEventListener('wheel', onWheel, { passive: false });
     hero.addEventListener('touchstart', onTouchStart, { passive: true });

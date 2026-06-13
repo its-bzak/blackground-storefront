@@ -2,6 +2,49 @@
 <script src="{{ 'archetype-hero.js' | asset_url }}" defer></script>
 
 <section class="archetype-hero">
+  <nav class="archetype-nav archetype-nav--top" id="archetype-top-nav">
+    <div class="dd-wrap tl" id="archetype-dd-collections">
+      <button class="nav-link" type="button" data-dropdown-toggle="archetype-dd-collections">
+        Collections <span class="dd-chev"></span>
+      </button>
+
+      <div class="dropdown">
+        <div class="dd-item">
+          <a class="dd-row" href="/collections/all">All Collections</a>
+        </div>
+        <div class="dd-item">
+          <a class="dd-row" href="/collections/mens">Mens</a>
+        </div>
+        <div class="dd-item">
+          <a class="dd-row" href="/collections/womens">Women</a>
+        </div>
+        <div class="dd-divider"></div>
+        <div class="dd-item">
+          <a class="dd-row" href="/collections/samples">Samples</a>
+        </div>
+        <div class="dd-item">
+          <a class="dd-row" href="/collections/upcoming">Upcoming</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="dd-wrap tr" id="archetype-dd-login">
+      <button class="nav-link" type="button" data-dropdown-toggle="archetype-dd-login">
+        Log In <span class="dd-chev"></span>
+      </button>
+
+      <div class="dropdown">
+        <div class="dd-item">
+          <a class="dd-row" href="{{ routes.account_url }}">My Account</a>
+        </div>
+        <div class="dd-divider"></div>
+        <div class="dd-item">
+          <a class="dd-row" href="{{ routes.account_register_url }}">Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
   <div class="stage" id="archetype-stage">
     {% for block in section.blocks %}
       <article
@@ -43,7 +86,53 @@
     {% endfor %}
   </div>
 
-  <div class="dots" id="archetype-dots"></div>
+  <nav class="archetype-nav archetype-nav--bottom" id="archetype-bottom-nav">
+    <div class="dd-wrap bl" id="archetype-dd-about">
+      <button class="nav-link" type="button" data-dropdown-toggle="archetype-dd-about">
+        About <span class="dd-chev"></span>
+      </button>
+
+      <div class="dropdown">
+        <div class="dd-item">
+          <a class="dd-row" href="/pages/our-story">Our Story</a>
+        </div>
+        <div class="dd-item">
+          <a class="dd-row" href="/pages/the-archetypes">The Archetypes</a>
+        </div>
+        <div class="dd-divider"></div>
+        <div class="dd-item">
+          <a class="dd-row" href="/pages/sustainability">Sustainability</a>
+        </div>
+        <div class="dd-item">
+          <a class="dd-row" href="/pages/careers">Careers</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="dots" id="archetype-dots"></div>
+
+    <div class="dd-wrap br" id="archetype-dd-join">
+      <button class="nav-link" type="button" data-dropdown-toggle="archetype-dd-join">
+        Join Us <span class="dd-chev"></span>
+      </button>
+
+      <div class="dropdown">
+        <div class="dd-item">
+          <a class="dd-row" href="/pages/newsletter">Newsletter</a>
+        </div>
+        <div class="dd-item">
+          <a class="dd-row" href="/pages/blackground-club">The Blackground Club</a>
+        </div>
+        <div class="dd-item">
+          <a class="dd-row" href="/pages/community">Community</a>
+        </div>
+        <div class="dd-divider"></div>
+        <div class="dd-item">
+          <a class="dd-row" href="/pages/contact">Contact</a>
+        </div>
+      </div>
+    </div>
+  </nav>
 </section>
 
 {% schema %}
