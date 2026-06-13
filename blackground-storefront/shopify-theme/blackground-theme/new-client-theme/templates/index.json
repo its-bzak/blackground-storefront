@@ -10,7 +10,7 @@
 {
   "sections": {
     "main": {
-      "type": "hero-archetype",
+      "type": "archetype-hero",
       "settings": {}
     }
   },
