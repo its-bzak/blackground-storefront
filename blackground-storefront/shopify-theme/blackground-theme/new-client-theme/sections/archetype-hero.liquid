@@ -1,0 +1,120 @@
+{{ 'archetype-hero.css' | asset_url | stylesheet_tag }}
+
+<section class="archetype-hero">
+    <div class="archetype-hero-cards">
+        {% for block in section.blocks %}
+        <article
+            class="card {{ block.settings.card_class }}"
+            data-i="{{ forloop.index0 }}"
+            data-screen-label=" {{ block.settings.screen_label }}"
+            {{ block.shopify_attributes }}
+        >
+            <div class="card_bg"></div>
+            <div class="card_over"></div>
+
+            <div class="ghost">{{ block.settings.ghost_text }}</div>
+            <div class="card_body">
+                <div class="card_number">
+                    {{ forloop.index | prepend: '0' }} / {{ section.blocks.size | prepend: '0' }}
+                </div>
+
+                <div class="card_label">
+                {{ block.settings.card_label }}
+                </div>
+
+                <h2 class="card_headline">
+                    {{ block.settings.headline }}
+                </h2>
+
+                <p class ="card_subtext"> 
+                {{ block.settings.card_subtext }}
+                </p>
+            </div>
+
+            {% if block.settings.button_label != blank and block.settings.button_link != blank %}
+            <a class="find-btn" href="{{ block.settings.button_link }}">
+                {{ block.settings.button_label }}
+            </a>
+            {% endif %}
+        </article>
+        {% endfor %}
+    </div>
+</section>
+
+{% schema %}
+{
+    "name": "Archetype Hero",
+    "blocks": [
+        {
+            "type": "card",
+            "name": "Card",
+            "settings": [
+                {
+                    "type": "text",
+                    "id": "card_class",
+                    "label": "Card CSS Class",
+                    "default": "c1"
+                },
+                {
+                    "type": "text",
+                    "id": "screen_label",
+                    "label": "Screen Label",
+                    "default": "01 Legacy Builder"
+                },
+                {
+                    "type": "text",
+                    "id": "ghost_text",
+                    "label": "Ghost Text",
+                    "default": "LEGACY"
+                },
+                {
+                    "type": "text",
+                    "id": "label",
+                    "label": "Card Label",
+                    "default": "The Legacy Builder"
+                },
+                {
+                    "type": "text",
+                    "id": "headline_1",
+                    "label": "Card Headline 1",
+                    "default": "You're not the first."
+                },
+                {
+                    "type": "text",
+                    "id": "headline_2",
+                    "label": "Card Headline 2",
+                    "default": "You won't be the last."
+                },
+                {
+                    "type": "text",
+                    "id": "card_subtext",
+                    "label": "Card Subtext",
+                    "default": "You're the link."
+                },
+                {
+                    "type": "text",
+                    "id": "button_label",
+                    "label": "Button Label",
+                    "default": "Find Your Archetype"
+                },
+                {
+                    "type": "url",
+                    "id": "button_link",
+                    "label": "Button Link",
+                }
+            ]
+        }
+    ],
+    "max_blocks": 8,
+    "presets": [
+        {
+            "name": "Archetype Hero",
+            "blocks": [
+                {
+                    "type": "card",
+                }
+            ]
+        }
+    ]
+}
+{% endschema %}
