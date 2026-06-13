@@ -1,19 +1,11 @@
 <section class="blackground-club-page">
-  <nav class="club-top-nav">
-    <a class="club-nav-link" href="{{ routes.root_url }}">← Blackground</a>
-
-    <a class="club-nav-logo" href="{{ routes.root_url }}" aria-label="Blackground home">
-      <img
-        src="{{ 'blackground_logo_text.png' | asset_url }}"
-        alt="Blackground"
-        loading="eager"
-      >
-    </a>
-
-    <a class="club-nav-link" href="{{ section.settings.quiz_link }}">
-      Take the Check
-    </a>
-  </nav>
+  <a class="club-wordmark" href="{{ routes.root_url }}" aria-label="Blackground home">
+    <img
+      src="{{ 'blackground_logo_text.png' | asset_url }}"
+      alt="Blackground"
+      loading="eager"
+    >
+  </a>
 
   <main class="club-main">
     <section class="club-hero" data-screen-label="01 Hero">
@@ -319,6 +311,10 @@
     background: #000;
   }
 
+  body:has(.blackground-club-page) .shopify-section-group-header-group {
+    display: none;
+  }
+
   .blackground-club-page,
   .blackground-club-page *,
   .blackground-club-page *::before,
@@ -331,7 +327,8 @@
     --gold: #D4AF00;
     --white: #F2F0EB;
     --line: rgba(212, 175, 0, 0.14);
-    --nav-h: 68px;
+    --logo-offset: clamp(24px, 4vw, 40px);
+    --logo-height: clamp(24px, 2.8vw, 32px);
 
     min-height: 100vh;
     overflow-x: hidden;
@@ -341,62 +338,30 @@
     text-wrap: pretty;
   }
 
+  .club-wordmark {
+    position: fixed;
+    top: var(--logo-offset);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 40;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .club-wordmark img {
+    display: block;
+    height: var(--logo-height);
+    width: auto;
+    filter: drop-shadow(0 0 12px rgba(212, 175, 0, 0.18));
+  }
+
   .blackground-club-page .gold {
     color: var(--gold);
   }
 
-  .club-top-nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: var(--nav-h);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 32px;
-    z-index: 300;
-    background: rgba(8, 8, 8, 0.85);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(212, 175, 0, 0.08);
-  }
-
-  .club-nav-logo {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    color: var(--gold);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.24em;
-  }
-
-  .club-nav-logo img {
-    width: 130px;
-    height: auto;
-    display: block;
-    filter: drop-shadow(0 0 12px rgba(212, 175, 0, 0.25));
-  }
-
-  .club-nav-link {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold);
-    text-decoration: none;
-    opacity: 0.85;
-    transition: opacity 0.2s;
-  }
-
-  .club-nav-link:hover {
-    opacity: 1;
-  }
-
   .club-main {
-    padding-top: var(--nav-h);
+    padding-top: 0;
   }
 
   .club-hero {
@@ -404,7 +369,7 @@
     min-height: 92vh;
     display: flex;
     align-items: center;
-    padding: clamp(60px, 8vw, 120px) clamp(28px, 6vw, 96px);
+    padding: calc(var(--logo-offset) + var(--logo-height) + clamp(44px, 8vw, 72px)) clamp(28px, 6vw, 96px) clamp(60px, 8vw, 120px);
     overflow: hidden;
     border-bottom: 1px solid var(--line);
   }
@@ -1129,14 +1094,6 @@
   }
 
   @media screen and (max-width: 600px) {
-    .club-top-nav {
-      padding: 0 18px;
-    }
-
-    .club-nav-logo {
-      display: none;
-    }
-
     .club-hero {
       min-height: 86vh;
     }
