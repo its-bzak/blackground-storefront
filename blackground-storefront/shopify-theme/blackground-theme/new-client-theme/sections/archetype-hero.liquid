@@ -1,120 +1,227 @@
 {{ 'archetype-hero.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'archetype-hero.js' | asset_url }}" defer></script>
 
 <section class="archetype-hero">
-    <div class="archetype-hero-cards">
-        {% for block in section.blocks %}
-        <article
-            class="card {{ block.settings.card_class }}"
-            data-i="{{ forloop.index0 }}"
-            data-screen-label=" {{ block.settings.screen_label }}"
-            {{ block.shopify_attributes }}
-        >
-            <div class="card_bg"></div>
-            <div class="card_over"></div>
+  <div class="stage" id="archetype-stage">
+    {% for block in section.blocks %}
+      <article
+        class="card {{ block.settings.card_class }}"
+        data-i="{{ forloop.index0 }}"
+        data-screen-label="{{ block.settings.screen_label }}"
+        {{ block.shopify_attributes }}
+      >
+        <div class="card-bg"></div>
+        <div class="card-over"></div>
 
-            <div class="ghost">{{ block.settings.ghost_text }}</div>
-            <div class="card_body">
-                <div class="card_number">
-                    {{ forloop.index | prepend: '0' }} / {{ section.blocks.size | prepend: '0' }}
-                </div>
+        <div class="ghost">{{ block.settings.ghost_text }}</div>
 
-                <div class="card_label">
-                {{ block.settings.card_label }}
-                </div>
+        <div class="card-body">
+          <div class="card-num">
+            {{ forloop.index | prepend: '0' }} / {{ section.blocks.size | prepend: '0' }}
+          </div>
 
-                <h2 class="card_headline">
-                    {{ block.settings.headline }}
-                </h2>
+          <div class="card-label">
+            {{ block.settings.label }}
+          </div>
 
-                <p class ="card_subtext"> 
-                {{ block.settings.card_subtext }}
-                </p>
-            </div>
+          <h2 class="card-hl">
+            {{ block.settings.headline_1 }}<br>
+            {{ block.settings.headline_2 }}
+          </h2>
 
-            {% if block.settings.button_label != blank and block.settings.button_link != blank %}
-            <a class="find-btn" href="{{ block.settings.button_link }}">
-                {{ block.settings.button_label }}
-            </a>
-            {% endif %}
-        </article>
-        {% endfor %}
-    </div>
+          <p class="card-sub">
+            {{ block.settings.card_subtext }}
+          </p>
+        </div>
+
+        {% if block.settings.button_label != blank and block.settings.button_link != blank %}
+          <a class="find-btn" href="{{ block.settings.button_link }}">
+            {{ block.settings.button_label }}
+          </a>
+        {% endif %}
+      </article>
+    {% endfor %}
+  </div>
+
+  <div class="dots" id="archetype-dots"></div>
 </section>
 
 {% schema %}
 {
-    "name": "Archetype Hero",
-    "blocks": [
+  "name": "Archetype Hero",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Card",
+      "settings": [
         {
-            "type": "card",
-            "name": "Card",
-            "settings": [
-                {
-                    "type": "text",
-                    "id": "card_class",
-                    "label": "Card CSS Class",
-                    "default": "c1"
-                },
-                {
-                    "type": "text",
-                    "id": "screen_label",
-                    "label": "Screen Label",
-                    "default": "01 Legacy Builder"
-                },
-                {
-                    "type": "text",
-                    "id": "ghost_text",
-                    "label": "Ghost Text",
-                    "default": "LEGACY"
-                },
-                {
-                    "type": "text",
-                    "id": "label",
-                    "label": "Card Label",
-                    "default": "The Legacy Builder"
-                },
-                {
-                    "type": "text",
-                    "id": "headline_1",
-                    "label": "Card Headline 1",
-                    "default": "You're not the first."
-                },
-                {
-                    "type": "text",
-                    "id": "headline_2",
-                    "label": "Card Headline 2",
-                    "default": "You won't be the last."
-                },
-                {
-                    "type": "text",
-                    "id": "card_subtext",
-                    "label": "Card Subtext",
-                    "default": "You're the link."
-                },
-                {
-                    "type": "text",
-                    "id": "button_label",
-                    "label": "Button Label",
-                    "default": "Find Your Archetype"
-                },
-                {
-                    "type": "url",
-                    "id": "button_link",
-                    "label": "Button Link",
-                }
-            ]
-        }
-    ],
-    "max_blocks": 8,
-    "presets": [
+          "type": "text",
+          "id": "card_class",
+          "label": "Card CSS Class",
+          "default": "c1"
+        },
         {
-            "name": "Archetype Hero",
-            "blocks": [
-                {
-                    "type": "card",
-                }
-            ]
+          "type": "text",
+          "id": "screen_label",
+          "label": "Screen Label",
+          "default": "01 Legacy Builder"
+        },
+        {
+          "type": "text",
+          "id": "ghost_text",
+          "label": "Ghost Text",
+          "default": "LEGACY"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Card Label",
+          "default": "The Legacy Builder"
+        },
+        {
+          "type": "text",
+          "id": "headline_1",
+          "label": "Card Headline Line 1",
+          "default": "You're not the first."
+        },
+        {
+          "type": "text",
+          "id": "headline_2",
+          "label": "Card Headline Line 2",
+          "default": "You won't be the last."
+        },
+        {
+          "type": "text",
+          "id": "card_subtext",
+          "label": "Card Subtext",
+          "default": "You're the link."
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button Label",
+          "default": "Find Your Archetype"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button Link"
         }
-    ]
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Archetype Hero",
+      "blocks": [
+        {
+          "type": "card",
+          "settings": {
+            "card_class": "c1",
+            "screen_label": "01 Legacy Builder",
+            "ghost_text": "LEGACY",
+            "label": "The Legacy Builder",
+            "headline_1": "You're not the first.",
+            "headline_2": "You won't be the last.",
+            "card_subtext": "You're the link.",
+            "button_label": "Find Your Archetype"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "card_class": "c2",
+            "screen_label": "02 First-Gen",
+            "ghost_text": "FIRST",
+            "label": "The First-Gen",
+            "headline_1": "Everyone's watching.",
+            "headline_2": "You're figuring it out.",
+            "card_subtext": "In real time.",
+            "button_label": "Find Your Archetype"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "card_class": "c3",
+            "screen_label": "03 Self-Made",
+            "ghost_text": "MADE",
+            "label": "The Self-Made",
+            "headline_1": "Nobody handed",
+            "headline_2": "you anything.",
+            "card_subtext": "That's why the fit is so clean.",
+            "button_label": "Find Your Archetype"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "card_class": "c4",
+            "screen_label": "04 Renaissance",
+            "ghost_text": "FIVE",
+            "label": "The Renaissance",
+            "headline_1": "You do five things.",
+            "headline_2": "You're actually good",
+            "card_subtext": "at four of them.",
+            "button_label": "Find Your Archetype"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "card_class": "c5",
+            "screen_label": "05 Quiet Storm",
+            "ghost_text": "STORM",
+            "label": "The Quiet Storm",
+            "headline_1": "You don't announce.",
+            "headline_2": "",
+            "card_subtext": "You arrive.",
+            "button_label": "Find Your Archetype"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "card_class": "c6",
+            "screen_label": "06 Culture Carrier",
+            "ghost_text": "CULTURE",
+            "label": "The Culture Carrier",
+            "headline_1": "I don't borrow culture.",
+            "headline_2": "",
+            "card_subtext": "I protect it.",
+            "button_label": "Find Your Archetype"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "card_class": "c7",
+            "screen_label": "07 Dual Citizen",
+            "ghost_text": "BOTH",
+            "label": "The Dual Citizen",
+            "headline_1": "Your Blackground has",
+            "headline_2": "a passport stamp.",
+            "card_subtext": "And an accent your mother still corrects.",
+            "button_label": "Find Your Archetype"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "card_class": "c8",
+            "screen_label": "08 System Breaker",
+            "ghost_text": "BREAK",
+            "label": "The System Breaker",
+            "headline_1": "You see the structure.",
+            "headline_2": "",
+            "card_subtext": "You challenge it.",
+            "button_label": "Find Your Archetype"
+          }
+        }
+      ]
+    }
+  ]
 }
 {% endschema %}
