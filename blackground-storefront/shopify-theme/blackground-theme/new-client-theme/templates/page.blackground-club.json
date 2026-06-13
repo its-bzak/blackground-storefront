@@ -1,11 +1,10 @@
 {
   "sections": {
-    "main": {
-      "type": "blackground-club",
-      "settings": {}
+    "blackground_club": {
+      "type": "blackground-club"
     }
   },
   "order": [
-    "main"
+    "blackground_club"
   ]
 }
