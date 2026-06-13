@@ -313,6 +313,12 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
+  html:has(.blackground-club-page),
+  body:has(.blackground-club-page),
+  .shopify-section:has(.blackground-club-page) {
+    background: #000;
+  }
+
   .blackground-club-page,
   .blackground-club-page *,
   .blackground-club-page *::before,
@@ -329,7 +335,7 @@
 
     min-height: 100vh;
     overflow-x: hidden;
-    background: var(--black);
+    background: black;
     color: var(--white);
     font-family: 'Space Grotesk', sans-serif;
     text-wrap: pretty;
