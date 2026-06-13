@@ -8,6 +8,11 @@
   assign size_filter = blank
   assign archetype_filter = blank
   assign gender_filter = blank
+  assign collection_filter_active = false
+  assign size_filter_active = false
+  assign archetype_filter_active = false
+  assign gender_filter_active = false
+  assign sort_filter_active = false
   assign collection_filter_label = 'COLLECTION'
   assign size_filter_label = 'SIZE'
   assign archetype_filter_label = 'ARCHETYPE'
@@ -42,7 +47,7 @@
           {% if collection_filter != blank %}
             {% for filter_value in collection_filter.values %}
               {% if filter_value.active %}
-                {% assign collection_filter_label = filter_value.label | upcase %}
+                {% assign collection_filter_active = true %}
                 {% break %}
               {% endif %}
             {% endfor %}
@@ -51,7 +56,7 @@
           {% if size_filter != blank %}
             {% for filter_value in size_filter.values %}
               {% if filter_value.active %}
-                {% assign size_filter_label = filter_value.label | upcase %}
+                {% assign size_filter_active = true %}
                 {% break %}
               {% endif %}
             {% endfor %}
@@ -60,7 +65,7 @@
           {% if archetype_filter != blank %}
             {% for filter_value in archetype_filter.values %}
               {% if filter_value.active %}
-                {% assign archetype_filter_label = filter_value.label | upcase %}
+                {% assign archetype_filter_active = true %}
                 {% break %}
               {% endif %}
             {% endfor %}
@@ -69,7 +74,7 @@
           {% if gender_filter != blank %}
             {% for filter_value in gender_filter.values %}
               {% if filter_value.active %}
-                {% assign gender_filter_label = filter_value.label | upcase %}
+                {% assign gender_filter_active = true %}
                 {% break %}
               {% endif %}
             {% endfor %}
@@ -77,14 +82,19 @@
 
           {% for option in collection.sort_options %}
             {% if option.value == sort_value and sort_value != blank %}
-              {% assign sort_filter_label = option.name | upcase %}
+              {% assign sort_filter_active = true %}
               {% break %}
             {% endif %}
           {% endfor %}
 
           {% if collection_filter != blank %}
             <div class="bg-collection__filter-menu">
-              <button class="bg-collection__filter-trigger" type="button" aria-expanded="false">{{ collection_filter_label }}</button>
+              <button class="bg-collection__filter-trigger{% if collection_filter_active %} bg-collection__filter-trigger--active{% endif %}" type="button" aria-expanded="false">
+                <span>{{ collection_filter_label }}</span>
+                {% if collection_filter_active %}
+                  <span class="bg-collection__filter-indicator" aria-hidden="true"></span>
+                {% endif %}
+              </button>
               <div class="bg-collection__filter-dropdown" role="menu">
                 <a class="bg-collection__filter-option" href="{{ collection_filter.url_to_remove | default: collection.url }}" role="menuitem">ANY</a>
                 {% for filter_value in collection_filter.values %}
@@ -98,7 +108,12 @@
 
           {% if size_filter != blank %}
             <div class="bg-collection__filter-menu">
-              <button class="bg-collection__filter-trigger" type="button" aria-expanded="false">{{ size_filter_label }}</button>
+              <button class="bg-collection__filter-trigger{% if size_filter_active %} bg-collection__filter-trigger--active{% endif %}" type="button" aria-expanded="false">
+                <span>{{ size_filter_label }}</span>
+                {% if size_filter_active %}
+                  <span class="bg-collection__filter-indicator" aria-hidden="true"></span>
+                {% endif %}
+              </button>
               <div class="bg-collection__filter-dropdown" role="menu">
                 <a class="bg-collection__filter-option" href="{{ size_filter.url_to_remove | default: collection.url }}" role="menuitem">ANY</a>
                 {% for filter_value in size_filter.values %}
@@ -112,7 +127,12 @@
 
           {% if archetype_filter != blank %}
             <div class="bg-collection__filter-menu">
-              <button class="bg-collection__filter-trigger" type="button" aria-expanded="false">{{ archetype_filter_label }}</button>
+              <button class="bg-collection__filter-trigger{% if archetype_filter_active %} bg-collection__filter-trigger--active{% endif %}" type="button" aria-expanded="false">
+                <span>{{ archetype_filter_label }}</span>
+                {% if archetype_filter_active %}
+                  <span class="bg-collection__filter-indicator" aria-hidden="true"></span>
+                {% endif %}
+              </button>
               <div class="bg-collection__filter-dropdown" role="menu">
                 <a class="bg-collection__filter-option" href="{{ archetype_filter.url_to_remove | default: collection.url }}" role="menuitem">ANY</a>
                 {% for filter_value in archetype_filter.values %}
@@ -126,7 +146,12 @@
 
           {% if gender_filter != blank %}
             <div class="bg-collection__filter-menu">
-              <button class="bg-collection__filter-trigger" type="button" aria-expanded="false">{{ gender_filter_label }}</button>
+              <button class="bg-collection__filter-trigger{% if gender_filter_active %} bg-collection__filter-trigger--active{% endif %}" type="button" aria-expanded="false">
+                <span>{{ gender_filter_label }}</span>
+                {% if gender_filter_active %}
+                  <span class="bg-collection__filter-indicator" aria-hidden="true"></span>
+                {% endif %}
+              </button>
               <div class="bg-collection__filter-dropdown" role="menu">
                 <a class="bg-collection__filter-option" href="{{ gender_filter.url_to_remove | default: collection.url }}" role="menuitem">ANY</a>
                 {% for filter_value in gender_filter.values %}
@@ -139,7 +164,12 @@
           {% endif %}
 
           <div class="bg-collection__filter-menu">
-            <button class="bg-collection__filter-trigger" type="button" aria-expanded="false">{{ sort_filter_label }}</button>
+            <button class="bg-collection__filter-trigger{% if sort_filter_active %} bg-collection__filter-trigger--active{% endif %}" type="button" aria-expanded="false">
+              <span>{{ sort_filter_label }}</span>
+              {% if sort_filter_active %}
+                <span class="bg-collection__filter-indicator" aria-hidden="true"></span>
+              {% endif %}
+            </button>
             <div class="bg-collection__filter-dropdown" role="menu">
               <button class="bg-collection__filter-option" type="button" data-sort-value="" role="menuitem">ANY</button>
               {% for option in collection.sort_options %}
@@ -222,6 +252,9 @@
   }
 
   .bg-collection__filter-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
     min-width: 0;
     padding: 0 1rem 0 0;
     border: 0;
@@ -234,6 +267,15 @@
     text-transform: uppercase;
     line-height: 1;
     cursor: pointer;
+  }
+
+  .bg-collection__filter-indicator {
+    inline-size: 0.38rem;
+    block-size: 0.38rem;
+    border-radius: 999px;
+    background: currentColor;
+    opacity: 0.55;
+    flex: 0 0 auto;
   }
 
   .bg-collection__filter-menu::after {

@@ -26,7 +26,9 @@
     {{ content_for_header }}
   </head>
 
-  <body{% if request.page_type == 'index' %} class="template-index"{% endif %}>
+  <body
+    class="{% if request.page_type == 'index' %}template-index{% elsif request.page_type == 'collection' %}template-collection{% elsif request.page_type == 'list-collections' %}template-list-collections{% endif %}"
+  >
     {% sections 'header-group' %}
 
     {{ content_for_layout }}
