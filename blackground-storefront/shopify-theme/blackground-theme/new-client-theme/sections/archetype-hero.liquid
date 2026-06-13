@@ -81,9 +81,12 @@
           </p>
         </div>
 
-        {% if block.settings.button_label != blank and block.settings.button_link != blank %}
-          <a class="find-btn" href="{{ block.settings.button_link }}">
-            {{ block.settings.button_label }}
+        {% liquid
+          assign archetype_filter_value = block.settings.label | strip | replace: ' ', '+'
+        %}
+        {% if block.settings.label != blank %}
+          <a class="find-btn" href="/collections/all?filter.p.m.custom.archetype={{ archetype_filter_value }}">
+            Shop {{ block.settings.label }}
           </a>
         {% endif %}
       </article>
