@@ -28,22 +28,26 @@
       </div>
     </div>
 
-    <div class="dd-wrap tr" id="archetype-dd-login">
-      <button class="nav-link" type="button" data-dropdown-toggle="archetype-dd-login">
-        Log In <span class="dd-chev"></span>
-      </button>
-
-      <div class="dropdown">
-        <div class="dd-item">
-          <a class="dd-row" href="{{ routes.account_url }}">My Account</a>
-        </div>
-        <div class="dd-divider"></div>
-        <div class="dd-item">
-          <a class="dd-row" href="{{ routes.account_register_url }}">Sign Up</a>
-        </div>
-      </div>
-    </div>
+    <a
+      class="nav-link archetype-hero__account-link{% if customer %} archetype-hero__account-link--customer{% endif %}"
+      href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}"
+    >
+      {% if customer %}
+        {{ customer.email }}
+      {% else %}
+        Log In
+      {% endif %}
+    </a>
   </nav>
+
+  <a class="archetype-hero__wordmark" href="{{ routes.root_url }}" aria-label="{{ shop.name }}">
+    <img
+      class="archetype-hero__wordmark-image"
+      src="{{ 'blackground_logo_text.png' | asset_url }}"
+      alt="{{ shop.name }}"
+      loading="eager"
+    >
+  </a>
 
   <div class="stage" id="archetype-stage">
     {% for block in section.blocks %}
@@ -99,13 +103,6 @@
         <div class="dd-item">
           <a class="dd-row" href="/pages/the-archetypes">The Archetypes</a>
         </div>
-        <div class="dd-divider"></div>
-        <div class="dd-item">
-          <a class="dd-row" href="/pages/sustainability">Sustainability</a>
-        </div>
-        <div class="dd-item">
-          <a class="dd-row" href="/pages/careers">Careers</a>
-        </div>
       </div>
     </div>
 
@@ -122,13 +119,6 @@
         </div>
         <div class="dd-item">
           <a class="dd-row" href="/pages/blackground-club">The Blackground Club</a>
-        </div>
-        <div class="dd-item">
-          <a class="dd-row" href="/pages/community">Community</a>
-        </div>
-        <div class="dd-divider"></div>
-        <div class="dd-item">
-          <a class="dd-row" href="/pages/contact">Contact</a>
         </div>
       </div>
     </div>
