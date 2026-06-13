@@ -3,11 +3,11 @@
     <a class="club-nav-link" href="{{ routes.root_url }}">← Blackground</a>
 
     <a class="club-nav-logo" href="{{ routes.root_url }}" aria-label="Blackground home">
-      {% if section.settings.logo != blank %}
-        {{ section.settings.logo | image_url: width: 260 | image_tag: alt: 'Blackground', loading: 'eager' }}
-      {% else %}
-        <span>BLACKGROUND</span>
-      {% endif %}
+      <img
+        src="{{ 'blackground_logo_text.png' | asset_url }}"
+        alt="Blackground"
+        loading="eager"
+      >
     </a>
 
     <a class="club-nav-link" href="{{ section.settings.quiz_link }}">
@@ -1163,21 +1163,14 @@
   "name": "Blackground Club",
   "settings": [
     {
-      "type": "image_picker",
-      "id": "logo",
-      "label": "Logo"
-    },
-    {
       "type": "url",
       "id": "join_link",
       "label": "Join button link",
-      "default": "/products/blackground-club-membership"
     },
     {
       "type": "url",
       "id": "quiz_link",
       "label": "Quiz link",
-      "default": "/pages/quiz"
     }
   ],
   "presets": [
