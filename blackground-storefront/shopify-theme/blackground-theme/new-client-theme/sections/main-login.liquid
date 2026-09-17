@@ -1,0 +1,17 @@
+<h1>Log in</h1>
+
+{% form 'customer_login' %}
+  {{ form.errors | default_errors }}
+  <label for="CustomerEmail">Email</label>
+  <input type="email" name="customer[email]" id="CustomerEmail" autocomplete="email" required>
+  <label for="CustomerPassword">Password</label>
+  <input type="password" name="customer[password]" id="CustomerPassword" autocomplete="current-password" required>
+  <button type="submit">Log in</button>
+{% endform %}
+
+{% schema %}
+{
+  "name": "Main login",
+  "settings": []
+}
+{% endschema %}

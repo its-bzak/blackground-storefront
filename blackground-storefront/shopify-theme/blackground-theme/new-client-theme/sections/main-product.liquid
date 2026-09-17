@@ -1,0 +1,25 @@
+<a href="{{ routes.all_products_collection_url }}">Back to Shop</a>
+<h1>{{ product.title }}</h1>
+<p>{{ product.price | money }}</p>
+
+{% for image in product.images %}
+  <img src="{{ image | image_url: width: 300 }}" alt="{{ image.alt | escape }}" width="300" height="{{ image.height }}" style="max-width: 100%; height: auto; object-fit: contain;">
+{% endfor %}
+
+{% form 'product', product %}
+  <select name="id">
+    {% for variant in product.variants %}
+      <option value="{{ variant.id }}"{% unless variant.available %} disabled{% endunless %}>
+        {{ variant.title }} - {{ variant.price | money }}
+      </option>
+    {% endfor %}
+  </select>
+  <button type="submit">Add to cart</button>
+{% endform %}
+
+{% schema %}
+{
+  "name": "Main product",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "quiz-wrapper",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

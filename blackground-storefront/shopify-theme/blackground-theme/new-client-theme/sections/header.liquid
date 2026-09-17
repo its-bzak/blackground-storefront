@@ -1,0 +1,23 @@
+<header>
+  <nav>
+    <a href="{{ routes.root_url }}">LOGO</a>
+    <a href="/pages/about">ABOUT</a>
+    <a href="{{ routes.all_products_collection_url }}">SHOP</a>
+
+    {% if customer %}
+      <span>{{ customer.email }}</span>
+      <a href="{{ routes.account_logout_url }}">LOGOUT</a>
+    {% else %}
+      <a href="{{ routes.account_login_url }}">LOGIN</a>
+    {% endif %}
+
+    <a href="{{ routes.cart_url }}">CART</a>
+  </nav>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": []
+}
+{% endschema %}
