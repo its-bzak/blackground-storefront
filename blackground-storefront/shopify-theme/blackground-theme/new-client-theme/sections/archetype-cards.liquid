@@ -1,0 +1,585 @@
+<style>
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --black: #080808;
+  --gold: #D4AF00;
+  --white: #F2F0EB;
+  --radius: 22px;
+  --nav-h: 68px;
+  --tab: 46px;
+  --total: 8;
+}
+
+.stage {
+  position: fixed;
+  top: var(--nav-h);
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(500px, 96vw, 1500px);
+  z-index: 10;
+}
+
+.card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  will-change: transform, opacity;
+  transition: none;
+}
+
+.card {
+  transition: transform 0.7s cubic-bezier(0.76, 0, 0.24, 1), opacity 0.4s ease;
+}
+
+.card-bg,
+.card-over {
+  position: absolute;
+  inset: 0;
+}
+
+.card-body {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  padding: 0 clamp(28px, 4vw, 60px) clamp(80px, 9vh, 100px);
+}
+
+.card-num {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  color: var(--gold);
+  opacity: 0.6;
+  margin-bottom: 6px;
+}
+
+.card-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+.card-hl {
+  font-size: clamp(28px, 4vw, 62px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+  margin-bottom: 10px;
+}
+
+.card-sub {
+  font-size: clamp(12px, 1.3vw, 17px);
+  font-weight: 400;
+  opacity: 0.5;
+}
+
+.ghost {
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: clamp(80px, 13vw, 180px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  opacity: 0.04;
+  user-select: none;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.find-btn {
+  position: absolute;
+  bottom: clamp(28px, 4vh, 44px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  background: transparent;
+  border: 1.5px solid rgba(242, 240, 235, 0.3);
+  border-radius: 999px;
+  padding: 13px 30px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--white);
+  cursor: pointer;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s, border-color 0.2s, color 0.2s, background 0.2s;
+  backdrop-filter: blur(8px);
+  text-decoration: none;
+}
+
+.card.is-active .find-btn {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.find-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(212, 175, 0, 0.06);
+}
+
+.c1 .card-bg {
+  background: #1a1200;
+  background-image:
+    repeating-linear-gradient(-45deg, transparent, transparent 28px, rgba(212, 175, 0, 0.07) 28px, rgba(212, 175, 0, 0.07) 29px),
+    repeating-linear-gradient(45deg, transparent, transparent 28px, rgba(212, 175, 0, 0.04) 28px, rgba(212, 175, 0, 0.04) 29px);
+}
+
+.c1 .card-over {
+  background: linear-gradient(to top, rgba(18, 10, 0, 0.96) 0%, rgba(18, 10, 0, 0.3) 55%, transparent 100%);
+}
+
+.c2 .card-bg {
+  background: radial-gradient(ellipse 55% 65% at 68% 40%, #10130a 0%, #050d14 65%);
+}
+
+.c2 .card-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 28% 48% at 70% 38%, rgba(212, 175, 0, 0.1) 0%, transparent 70%);
+}
+
+.c2 .card-over {
+  background: linear-gradient(to top, rgba(5, 13, 20, 0.97) 0%, rgba(5, 13, 20, 0.3) 55%, transparent 100%);
+}
+
+.c3 .card-bg {
+  background: #060c08;
+  background-image:
+    linear-gradient(rgba(212, 175, 0, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 175, 0, 0.055) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+.c3 .card-bg::after {
+  content: '';
+  position: absolute;
+  top: 28px;
+  right: 40px;
+  width: 120px;
+  height: 120px;
+  border-top: 1px solid rgba(212, 175, 0, 0.28);
+  border-right: 1px solid rgba(212, 175, 0, 0.28);
+}
+
+.c3 .card-over {
+  background: linear-gradient(to top, rgba(6, 12, 8, 0.97) 0%, rgba(6, 12, 8, 0.2) 60%, transparent 100%);
+}
+
+.c4 .card-bg {
+  background: #150c00;
+}
+
+.c4 .card-bg::before {
+  content: '';
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 175, 0, 0.1);
+  top: -110px;
+  right: 6%;
+}
+
+.c4 .card-bg::after {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 175, 0, 0.2);
+  top: 8%;
+  right: 18%;
+}
+
+.c4 .card-over {
+  background: linear-gradient(to top, rgba(15, 10, 0, 0.97) 0%, rgba(15, 10, 0, 0.3) 55%, transparent 100%);
+}
+
+.c5 .card-bg {
+  background: #090909;
+}
+
+.c5 .card-bg::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 1px;
+  top: 40%;
+  left: -50%;
+  background: linear-gradient(to right, transparent, rgba(212, 175, 0, 0.16) 30%, rgba(212, 175, 0, 0.16) 70%, transparent);
+  box-shadow: 0 16px 0 rgba(212, 175, 0, 0.07), 0 32px 0 rgba(212, 175, 0, 0.04), 0 -16px 0 rgba(212, 175, 0, 0.07);
+}
+
+.c5 .card-over {
+  background: linear-gradient(to top, rgba(9, 9, 9, 0.98) 0%, rgba(9, 9, 9, 0.55) 50%, rgba(9, 9, 9, 0.2) 100%);
+}
+
+.c6 .card-bg {
+  background: #0f0c05;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(212, 175, 0, 0.065) 39px, rgba(212, 175, 0, 0.065) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(212, 175, 0, 0.065) 39px, rgba(212, 175, 0, 0.065) 40px),
+    repeating-linear-gradient(45deg, transparent, transparent 19px, rgba(212, 175, 0, 0.03) 19px, rgba(212, 175, 0, 0.03) 20px),
+    repeating-linear-gradient(-45deg, transparent, transparent 19px, rgba(212, 175, 0, 0.03) 19px, rgba(212, 175, 0, 0.03) 20px);
+}
+
+.c6 .card-over {
+  background: linear-gradient(to top, rgba(10, 8, 3, 0.97) 0%, rgba(10, 8, 3, 0.3) 55%, transparent 100%);
+}
+
+.c7 .card-bg {
+  background: #050c15;
+  background-image:
+    linear-gradient(90deg, rgba(212, 175, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(212, 175, 0, 0.025) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.c7 .card-bg::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, rgba(212, 175, 0, 0.35) 25%, rgba(212, 175, 0, 0.35) 75%, transparent);
+}
+
+.c7 .card-over {
+  background: linear-gradient(to top, rgba(5, 12, 21, 0.97) 0%, rgba(5, 12, 21, 0.3) 55%, transparent 100%);
+}
+
+.c8 .card-bg {
+  background: #0b050e;
+  background-image:
+    linear-gradient(rgba(212, 175, 0, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 175, 0, 0.055) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+.c8 .card-bg::after {
+  content: '';
+  position: absolute;
+  top: 40%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent 0%, rgba(212, 175, 0, 0.4) 18%, rgba(212, 175, 0, 0.4) 44%, transparent 56%, rgba(212, 175, 0, 0.4) 68%, rgba(212, 175, 0, 0.4) 88%, transparent 100%);
+}
+
+.c8 .card-over {
+  background: linear-gradient(to top, rgba(11, 5, 14, 0.97) 0%, rgba(11, 5, 14, 0.3) 55%, transparent 100%);
+}
+
+.dots {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(242, 240, 235, 0.22);
+  cursor: pointer;
+  transition: background 0.35s, transform 0.35s;
+}
+
+.dot.on {
+  transform: scale(1.55);
+}
+
+@media screen and (max-width: 749px) {
+  .stage {
+    width: 100vw;
+  }
+
+  .card {
+    border-radius: 0;
+  }
+
+  .card-body {
+    padding: 0 24px 96px;
+  }
+
+  .card-hl {
+    font-size: clamp(34px, 11vw, 52px);
+  }
+
+  .card-sub {
+    font-size: 14px;
+  }
+
+  .ghost {
+    right: -20px;
+    font-size: clamp(76px, 24vw, 130px);
+  }
+
+  .find-btn {
+    bottom: 42px;
+    padding: 12px 22px;
+    font-size: 9px;
+  }
+
+  .dots {
+    bottom: 80px;
+  }
+}
+</style>
+
+<div class="stage" id="stage">
+  <article class="card c1" data-i="0" data-screen-label="01 Legacy Builder">
+    <div class="card-bg"></div><div class="card-over"></div>
+    <div class="ghost">LEGACY</div>
+    <div class="card-body">
+      <div class="card-num">01 / 08</div>
+      <div class="card-label">The Legacy Builder</div>
+      <h2 class="card-hl">You're not the first.<br> You won't be the last.</h2>
+      <p class="card-sub">You're the link.</p>
+    </div>
+    <a class="find-btn" href="/pages/quiz">Find Your Archetype</a>
+  </article>
+
+  <article class="card c2" data-i="1" data-screen-label="02 First-Gen">
+    <div class="card-bg"></div><div class="card-over"></div>
+    <div class="ghost">FIRST</div>
+    <div class="card-body">
+      <div class="card-num">02 / 08</div>
+      <div class="card-label">The First-Gen</div>
+      <h2 class="card-hl">Everyone's watching.<br>You're figuring it out.</h2>
+      <p class="card-sub">In real time.</p>
+    </div>
+    <a class="find-btn" href="/pages/quiz">Find Your Archetype</a>
+  </article>
+
+  <article class="card c3" data-i="2" data-screen-label="03 Self-Made">
+    <div class="card-bg"></div><div class="card-over"></div>
+    <div class="ghost">MADE</div>
+    <div class="card-body">
+      <div class="card-num">03 / 08</div>
+      <div class="card-label">The Self-Made</div>
+      <h2 class="card-hl">Nobody handed<br>you anything.</h2>
+      <p class="card-sub">That's why the fit is so clean.</p>
+    </div>
+    <a class="find-btn" href="/pages/quiz">Find Your Archetype</a>
+  </article>
+
+  <article class="card c4" data-i="3" data-screen-label="04 Renaissance">
+    <div class="card-bg"></div><div class="card-over"></div>
+    <div class="ghost">FIVE</div>
+    <div class="card-body">
+      <div class="card-num">04 / 08</div>
+      <div class="card-label">The Renaissance</div>
+      <h2 class="card-hl">You do five things.<br>You're actually good</h2>
+      <p class="card-sub">at four of them.</p>
+    </div>
+    <a class="find-btn" href="/pages/quiz">Find Your Archetype</a>
+  </article>
+
+  <article class="card c5" data-i="4" data-screen-label="05 Quiet Storm">
+    <div class="card-bg"></div><div class="card-over"></div>
+    <div class="ghost" style="opacity:0.02">STORM</div>
+    <div class="card-body">
+      <div class="card-num">05 / 08</div>
+      <div class="card-label">The Quiet Storm</div>
+      <h2 class="card-hl">You don't announce.</h2>
+      <p class="card-sub">You arrive.</p>
+    </div>
+    <a class="find-btn" href="/pages/quiz">Find Your Archetype</a>
+  </article>
+
+  <article class="card c6" data-i="5" data-screen-label="06 Culture Carrier">
+    <div class="card-bg"></div><div class="card-over"></div>
+    <div class="ghost">CULTURE</div>
+    <div class="card-body">
+      <div class="card-num">06 / 08</div>
+      <div class="card-label">The Culture Carrier</div>
+      <h2 class="card-hl">I don't borrow culture.</h2>
+      <p class="card-sub">I protect it.</p>
+    </div>
+    <a class="find-btn" href="/pages/quiz">Find Your Archetype</a>
+  </article>
+
+  <article class="card c7" data-i="6" data-screen-label="07 Dual Citizen">
+    <div class="card-bg"></div><div class="card-over"></div>
+    <div class="ghost">BOTH</div>
+    <div class="card-body">
+      <div class="card-num">07 / 08</div>
+      <div class="card-label">The Dual Citizen</div>
+      <h2 class="card-hl">Your Blackground has<br>a passport stamp.</h2>
+      <p class="card-sub">And an accent your mother still corrects.</p>
+    </div>
+    <a class="find-btn" href="/pages/quiz">Find Your Archetype</a>
+  </article>
+
+  <article class="card c8" data-i="7" data-screen-label="08 System Breaker">
+    <div class="card-bg"></div><div class="card-over"></div>
+    <div class="ghost">BREAK</div>
+    <div class="card-body">
+      <div class="card-num">08 / 08</div>
+      <div class="card-label">The System Breaker</div>
+      <h2 class="card-hl">You see the structure.</h2>
+      <p class="card-sub">You challenge it.</p>
+    </div>
+    <a class="find-btn" href="/pages/quiz">Find Your Archetype</a>
+  </article>
+</div>
+
+<div class="dots" id="dots"></div>
+
+<script>
+const TOTAL = 8;
+const TAB = 18;
+const SLIDES = [
+  { bg: '#f0ece0', dark: true },
+  { bg: '#c87145', dark: false },
+  { bg: '#0a0a0a', dark: false },
+  { bg: '#4a1015', dark: false },
+  { bg: '#f8f5ef', dark: true },
+  { bg: '#D4AF00', dark: true },
+  { bg: '#8b1520', dark: false },
+  { bg: '#1f6363', dark: false }
+];
+
+const stage = document.getElementById('stage');
+const cards = Array.from(document.querySelectorAll('.card'));
+const dotsEl = document.getElementById('dots');
+
+for (let i = 0; i < TOTAL; i++) {
+  const d = document.createElement('div');
+  d.className = 'dot';
+  d.addEventListener('click', () => snapTo(i));
+  dotsEl.appendChild(d);
+}
+
+const dotEls = Array.from(dotsEl.querySelectorAll('.dot'));
+let current = 0;
+let busy = false;
+
+function layout() {
+  cards.forEach((card, i) => {
+    const k = i - current;
+    let ty;
+    let z;
+    let opacity;
+
+    if (k < 0) {
+      ty = '-110%';
+      z = 5;
+      opacity = 0;
+      card.classList.remove('is-active');
+    } else if (k === 0) {
+      ty = '0px';
+      z = 50;
+      opacity = 1;
+      card.classList.add('is-active');
+    } else {
+      ty = `calc(-${k * TAB}px)`;
+      z = 50 - k;
+      opacity = k <= 5 ? 1 : 0;
+      card.classList.remove('is-active');
+    }
+
+    card.style.transform = `translateY(${ty})`;
+    card.style.zIndex = String(z);
+    card.style.opacity = String(opacity);
+  });
+
+  const slide = SLIDES[current];
+  document.body.style.transition = 'background 0.7s ease';
+  document.body.style.background = slide.bg;
+
+  dotEls.forEach((d, i) => {
+    d.classList.toggle('on', i === current);
+    d.style.background = i === current
+      ? (slide.dark ? 'rgba(20,14,0,0.7)' : 'var(--gold)')
+      : (slide.dark ? 'rgba(20,14,0,0.25)' : 'rgba(242,240,235,0.25)');
+  });
+}
+
+function goTo(idx) {
+  if (busy || idx === current || idx < 0 || idx >= TOTAL) return;
+  busy = true;
+  current = idx;
+  layout();
+  setTimeout(() => { busy = false; }, 720);
+}
+
+function next() {
+  goTo(current + 1);
+}
+
+function prev() {
+  goTo(current - 1);
+}
+
+const snapTo = goTo;
+
+let wAcc = 0;
+let wT = null;
+window.addEventListener('wheel', e => {
+  e.preventDefault();
+  if (busy) return;
+  wAcc += e.deltaY;
+  clearTimeout(wT);
+  wT = setTimeout(() => { wAcc = 0; }, 180);
+  if (Math.abs(wAcc) > 40) {
+    wAcc > 0 ? next() : prev();
+    wAcc = 0;
+  }
+}, { passive: false });
+
+window.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight') next();
+  if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') prev();
+});
+
+let ty0 = 0;
+window.addEventListener('touchstart', e => { ty0 = e.touches[0].clientY; }, { passive: true });
+window.addEventListener('touchend', e => {
+  const dy = ty0 - e.changedTouches[0].clientY;
+  if (Math.abs(dy) > 40) dy > 0 ? next() : prev();
+}, { passive: true });
+
+layout();
+</script>
+
+{% schema %}
+{
+  "name": "Archetype Cards",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Archetype Cards"
+    }
+  ]
+}
+{% endschema %}

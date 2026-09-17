@@ -4,10 +4,33 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>{{ shop.name }}</title>
+    <style>
+      body {
+        background-color: #080808;
+        color: #D4AF00;
+      }
+
+      a {
+        color: #D4AF00;
+      }
+
+      {% if template == 'index' %}
+        html,
+        body {
+          overflow: hidden;
+          height: 100%;
+          margin: 0;
+          padding: 0;
+        }
+      {% endif %}
+    </style>
     {{ content_for_header }}
   </head>
   <body>
     {% section 'header' %}
-    {{ content_for_layout }}
+    <main{% if template.name != 'index' %} style="padding-top: 80px;"{% endif %}>
+      {{ content_for_layout }}
+    </main>
+    {% section 'footer' %}
   </body>
 </html>
