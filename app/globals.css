@@ -1,0 +1,198 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-ink: #080808;
+  --color-coal: #131210;
+  --color-gold: #d4af00;
+  --color-bone: #f2f0eb;
+
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-serif), ui-serif, Georgia, serif;
+
+  --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    background: var(--color-ink);
+    color: var(--color-bone);
+    color-scheme: dark;
+  }
+
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 1px solid var(--color-gold);
+    outline-offset: 4px;
+  }
+}
+
+/* Small tracked uppercase label used for nav, metadata and buttons. */
+@utility eyebrow {
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer components {
+  /* Full-screen mobile menu. Fades in where the browser supports @starting-style. */
+  .menu-dialog {
+    opacity: 0;
+    transition:
+      opacity 0.35s var(--ease-editorial),
+      display 0.35s allow-discrete,
+      overlay 0.35s allow-discrete;
+  }
+
+  .menu-dialog[open] {
+    opacity: 1;
+
+    @starting-style {
+      opacity: 0;
+    }
+  }
+
+  .menu-dialog::backdrop {
+    background: var(--color-ink);
+  }
+
+  /* Archetype card faces: one pattern per card, named in lib/archetypes.ts. */
+  .art-legacy {
+    background-color: #1a1200;
+    background-image:
+      repeating-linear-gradient(
+        -45deg,
+        transparent 0 28px,
+        rgb(212 175 0 / 0.07) 28px 29px
+      ),
+      repeating-linear-gradient(
+        45deg,
+        transparent 0 28px,
+        rgb(212 175 0 / 0.04) 28px 29px
+      );
+  }
+
+  .art-first {
+    background-image:
+      radial-gradient(
+        ellipse 42% 48% at 68% 34%,
+        rgb(212 175 0 / 0.12) 0%,
+        transparent 70%
+      ),
+      radial-gradient(ellipse 70% 65% at 68% 40%, #10130a 0%, #050d14 65%);
+  }
+
+  .art-made {
+    background-color: #060c08;
+    background-image:
+      linear-gradient(rgb(212 175 0 / 0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(212 175 0 / 0.055) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .art-renaissance {
+    background-color: #150c00;
+    background-image:
+      radial-gradient(
+        circle at 72% 20%,
+        transparent 0 119px,
+        rgb(212 175 0 / 0.22) 119px 120px,
+        transparent 120px
+      ),
+      radial-gradient(
+        circle at 60% 4%,
+        transparent 0 219px,
+        rgb(212 175 0 / 0.11) 219px 220px,
+        transparent 220px
+      );
+  }
+
+  .art-storm {
+    background-color: #090909;
+    background-image:
+      linear-gradient(
+        to bottom,
+        transparent calc(36% - 17px),
+        rgb(212 175 0 / 0.07) calc(36% - 17px) calc(36% - 16px),
+        transparent calc(36% - 16px) calc(36% - 1px),
+        rgb(212 175 0 / 0.16) calc(36% - 1px) 36%,
+        transparent 36% calc(36% + 15px),
+        rgb(212 175 0 / 0.07) calc(36% + 15px) calc(36% + 16px),
+        transparent calc(36% + 16px) calc(36% + 31px),
+        rgb(212 175 0 / 0.04) calc(36% + 31px) calc(36% + 32px),
+        transparent calc(36% + 32px)
+      );
+  }
+
+  .art-culture {
+    background-color: #0f0c05;
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        transparent 0 39px,
+        rgb(212 175 0 / 0.065) 39px 40px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent 0 39px,
+        rgb(212 175 0 / 0.065) 39px 40px
+      ),
+      repeating-linear-gradient(
+        45deg,
+        transparent 0 19px,
+        rgb(212 175 0 / 0.03) 19px 20px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        transparent 0 19px,
+        rgb(212 175 0 / 0.03) 19px 20px
+      );
+  }
+
+  .art-dual {
+    background-color: #050c15;
+    background-image:
+      linear-gradient(
+        to right,
+        transparent calc(50% - 0.5px),
+        rgb(212 175 0 / 0.35) calc(50% - 0.5px) calc(50% + 0.5px),
+        transparent calc(50% + 0.5px)
+      ),
+      linear-gradient(90deg, rgb(212 175 0 / 0.05) 1px, transparent 1px),
+      linear-gradient(0deg, rgb(212 175 0 / 0.025) 1px, transparent 1px);
+    background-size:
+      100% 100%,
+      32px 32px,
+      32px 32px;
+  }
+
+  .art-breaker {
+    background-color: #0b050e;
+    background-image:
+      linear-gradient(
+        to bottom,
+        transparent calc(36% - 0.5px),
+        rgb(212 175 0 / 0.4) calc(36% - 0.5px) calc(36% + 0.5px),
+        transparent calc(36% + 0.5px)
+      ),
+      linear-gradient(rgb(212 175 0 / 0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(212 175 0 / 0.055) 1px, transparent 1px);
+    background-size:
+      100% 100%,
+      60px 60px,
+      60px 60px;
+  }
+}
