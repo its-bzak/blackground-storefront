@@ -1,5 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Instrument_Serif } from "next/font/google";
+
+import { INDEXABLE, SITE_URL } from "@/lib/site";
+
 import "./globals.css";
 
 const body = Geist({
@@ -15,11 +18,16 @@ const serif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
+  // Makes the relative URLs in metadata, such as the share image, absolute.
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Blackground",
     template: "%s | Blackground",
   },
   description: "Blackground. Find your archetype.",
+  openGraph: { siteName: "Blackground", type: "website", locale: "en_US" },
+  twitter: { card: "summary_large_image" },
+  ...(!INDEXABLE && { robots: { index: false, follow: false } }),
 };
 
 export const viewport: Viewport = {
