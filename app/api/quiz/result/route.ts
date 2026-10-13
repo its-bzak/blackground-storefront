@@ -1,9 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { resolveCustomer } from "@/lib/account";
 import { parseAnswers, scoreQuiz } from "@/lib/quiz/scoring";
-import { getCustomerToken } from "@/lib/session";
 import { saveArchetype } from "@/lib/shopify/archetype";
-import { getCustomer } from "@/lib/shopify/customer";
 
 function isSameOrigin(request: NextRequest): boolean {
   const origin = request.headers.get("origin");
@@ -43,13 +42,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "invalid_answers" }, { status: 400 });
   }
 
-  const token = await getCustomerToken();
-  if (!token) return NextResponse.json(SIGNED_OUT);
-
   try {
-    // The access token proves who this is; a customer id is never accepted
-    // from the client. An expired token resolves to no customer.
-    const customer = await getCustomer(token);
+    // The session proves who this is; a customer id is never accepted from
+    // the client. A session that can't be renewed resolves to no customer.
+    const customer = await resolveCustomer();
     if (!customer) return NextResponse.json(SIGNED_OUT);
 
     const result = scoreQuiz(answers);

@@ -2,11 +2,12 @@
 
 import { refresh } from "next/cache";
 
-import { getCartId, setCartId } from "@/lib/session";
+import { getCartId, getCustomerSession, setCartId } from "@/lib/session";
 import {
   addCartLines,
   createCart,
   removeCartLines,
+  setCartCustomer,
   updateCartLines,
 } from "@/lib/shopify/cart";
 
@@ -36,6 +37,15 @@ export async function addToCart(
       ? await addCartLines(cartId, lines).catch(() => null)
       : null;
     const cart = existing ?? (await createCart(lines));
+
+    // A new bag started by a signed-in customer is tied to them, so checkout
+    // recognises them. Best effort: the bag works either way.
+    const { accessToken } = await getCustomerSession();
+    if (!existing && accessToken) {
+      await setCartCustomer(cart.id, accessToken).catch((error) => {
+        console.error("Linking the bag to the customer failed", error);
+      });
+    }
 
     // Setting the cookie also re-renders the page, which updates the bag count.
     await setCartId(cart.id);

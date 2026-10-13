@@ -97,9 +97,11 @@ export function QuizResult({ answers, onReview, onRetake }: Props) {
           <p className="eyebrow text-gold">Saved to your profile</p>
         )}
         {save.status === "signed-out" && (
-          <Link href="/account/login?next=/quiz" className={action}>
+          // Sign-in leaves for Shopify's login page, so a plain link rather
+          // than a client route.
+          <a href="/account/login?next=/quiz" className={action}>
             Sign in to save this to your profile
-          </Link>
+          </a>
         )}
         {save.status === "error" && (
           <p className="eyebrow text-bone/60">
