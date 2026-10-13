@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 import { notFound, unstable_rethrow } from "next/navigation";
 import { Suspense } from "react";
 
-import { getContentPage } from "@/lib/shopify/products";
+import { Article } from "@/components/content/Article";
+import { getPage } from "@/lib/shopify/content";
 
 type Props = PageProps<"/pages/[handle]">;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { handle } = await params;
   try {
-    const page = await getContentPage(handle);
+    const page = await getPage(handle);
     return {
       title: page?.seo?.title ?? page?.title ?? "Not found",
       description: page?.seo?.description ?? undefined,
@@ -33,19 +34,8 @@ export default function ContentRoute(props: Props) {
 
 async function Content({ params }: Pick<Props, "params">) {
   const { handle } = await params;
-  const page = await getContentPage(handle);
+  const page = await getPage(handle);
   if (!page) notFound();
 
-  return (
-    <article>
-      <h1 className="font-display text-[clamp(3rem,10vw,6rem)] leading-[0.95]">
-        {page.title}
-      </h1>
-      <div
-        className="mt-12 text-lg leading-relaxed text-bone/75 [&_a]:underline [&_h2]:mt-12 [&_h2]:font-display [&_h2]:text-4xl [&_h2]:text-bone [&_li]:mt-2 [&_ol]:mt-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_p+p]:mt-6 [&_strong]:text-bone [&_ul]:mt-6 [&_ul]:list-disc [&_ul]:pl-6"
-        // Written by the merchant in the Shopify admin.
-        dangerouslySetInnerHTML={{ __html: page.body }}
-      />
-    </article>
-  );
+  return <Article title={page.title} html={page.body} />;
 }

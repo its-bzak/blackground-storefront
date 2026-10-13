@@ -81,6 +81,9 @@ export type ContentPage = {
   seo: { title: string | null; description: string | null } | null;
 };
 
+// One of the store's legal policies, from Settings > Policies in the admin.
+export type Policy = { handle: string; title: string; body: string };
+
 export type CartLine = {
   id: string;
   quantity: number;

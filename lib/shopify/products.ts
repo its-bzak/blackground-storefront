@@ -307,7 +307,8 @@ export async function getProduct(handle: string): Promise<Product | null> {
 
 export async function getContentPage(handle: string): Promise<ContentPage | null> {
   "use cache";
-  cacheLife("hours");
+  // Short, so an edit in the Shopify admin shows up within minutes.
+  cacheLife("minutes");
   cacheTag("pages");
 
   const data = await storefront<{ page: ContentPage | null }>(PAGE_QUERY, {
