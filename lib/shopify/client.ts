@@ -24,7 +24,7 @@ function requireEnv(name: string): string {
   return value;
 }
 
-function storeDomain(): string {
+export function storeDomain(): string {
   return requireEnv("SHOPIFY_STORE_DOMAIN")
     .replace(/^https?:\/\//, "")
     .replace(/\/+$/, "");
@@ -66,17 +66,34 @@ async function request<T>(
   return json.data;
 }
 
-export async function storefront<T>(
-  query: string,
-  variables?: Variables,
-): Promise<T> {
-  return request<T>(
-    `https://${storeDomain()}/api/${API_VERSION}/graphql.json`,
-    {
+// Every call here is made from the server, which is what the private token is
+// for. With it Shopify also wants the shopper's IP on requests made on a
+// buyer's behalf, or all traffic looks like one visitor at this server's
+// address. Cached catalogue reads have no buyer and leave it out. The public
+// token is the fallback for a setup that only has that one.
+function storefrontHeaders(buyerIp?: string): Record<string, string> {
+  const privateToken = process.env.SHOPIFY_STOREFRONT_PRIVATE_TOKEN;
+  if (!privateToken) {
+    return {
       "X-Shopify-Storefront-Access-Token": requireEnv(
         "SHOPIFY_STOREFRONT_ACCESS_TOKEN",
       ),
-    },
+    };
+  }
+  return {
+    "Shopify-Storefront-Private-Token": privateToken,
+    ...(buyerIp && { "Shopify-Storefront-Buyer-IP": buyerIp }),
+  };
+}
+
+export async function storefront<T>(
+  query: string,
+  variables?: Variables,
+  options: { buyerIp?: string } = {},
+): Promise<T> {
+  return request<T>(
+    `https://${storeDomain()}/api/${API_VERSION}/graphql.json`,
+    storefrontHeaders(options.buyerIp),
     query,
     variables,
   );
